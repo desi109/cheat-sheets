@@ -1,0 +1,113 @@
+Installation and Setup (on Linux)
+
+
+
+---------------------------------JDK--------------------------------------------------------------
+     Download:  https://corretto.aws/downloads/latest/amazon-corretto-11-x64-linux-jdk.deb
+
+cd ~/Downloads/
+sudo apt update && sudo apt install java-common
+sudo dpkg --install java-11-amazon-corretto-jdk_11.0.8.10-1_amd64.deb
+java -version
+sudo update-alternatives --config java 
+sudo update-alternatives --config javac
+
+     Find it in home dir:   /usr/lib/jvm
+     Export JAVA_HOME env. variable:
+sudo nano /etc/profile
+
+      Add at the end of the file:
+      export JAVA_HOME=/usr/lib/jvm/java-11-amazon-corretto
+      export PATH=$JAVA_HOME/bin:$PATH
+
+      Restart 
+      
+echo $JAVA_HOME
+echo $PATH
+
+
+
+==================================================================================================
+==================================================================================================
+
+
+
+---------------------------------Maven------------------------------------------------------------
+     Download:  
+     https://mirrors.netix.net/apache/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz
+
+cd ~/Downloads/
+tar xzf apache-maven-3.6.3-bin.tar.gz 
+sudo mv apache-maven-3.6.3/ /usr/local/apache-maven/
+
+     Find it in home dir:   /usr/lib/jvm
+     Export JAVA_HOME env. variable:
+sudo nano /etc/profile
+
+      Add at the end of the file:
+      export M2_HOME=/usr/local/apache-maven/apache-maven-3.6.3
+      export M2=$M2_HOME/bin
+      export MAVEN_OPTS="-Xms256m -Xmx512m"
+      export PATH=$M2:$PATH
+
+      Restart
+      
+mvn -version
+
+echo $M2_HOME
+echo $M2
+echo $MAVEN_OPTS
+echo $PATH
+
+      
+
+==================================================================================================
+==================================================================================================
+
+
+
+---------------------------------Node.js (npm)------------------------------------------------------------
+
+sudo apt update && sudo apt install npm
+
+
+===================================================================================================
+===================================================================================================
+
+
+
+---------------------------------SDK man------------------------------------------------------------
+
+sudo curl -s "https://get.sdkman.io" | bash
+source "/home/deisi/.sdkman/bin/sdkman-init.sh"
+sdk version
+
+
+===================================================================================================
+===================================================================================================
+
+
+
+---------------------------------Springboot------------------------------------------------------------
+
+sdk install springboot
+spring --version
+
+
+===================================================================================================
+===================================================================================================
+
+      Other things:
+sudo apt update
+sudo apt install git
+sudo apt install curl
+
+
+
+
+
+
+
+
+
+
