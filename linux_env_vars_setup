@@ -32,7 +32,7 @@ echo $PATH
 
 
 
----------------------------------Maven------------------------------------------------------------
+----------------------------------Maven------------------------------------------------------------
      Download:  
      https://mirrors.netix.net/apache/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz
 
@@ -99,15 +99,12 @@ spring --version
 
       Other things:
 sudo apt update
+
 sudo apt install git
+git config --global user.email "deisi_deisi@abv.bg"
+git config --global user.name "Desislava Milusheva"
+  
 sudo apt install curl
-
-
-
-
-
-
-
 
 
 
