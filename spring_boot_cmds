@@ -83,3 +83,42 @@ psql -U user1234 -d internships -W
      internships=>
 
 
+
+
+
+
+
+sudo apt update
+sudo apt install build-essential libssl-dev libffi-dev libgmp3-dev virtualenv python-pip libpq-dev python-dev
+
+mkdir pgAdmin4
+cd pgAdmin4
+virtualenv pgAdmin4
+cd pgAdmin4
+source bin/activate
+wget https://ftp.postgresql.org/pub/pgadmin/pgadmin4/v4.20/pip/pgadmin4-4.20-py2.py3-none-any.whl
+
+pip install pgadmin4-4.20-py2.py3-none-any.whl
+
+   ----> If ERROR: https://itectec.com/ubuntu/ubuntu-cant-install-pgadmin-4-on-20-04-lts/
+   
+   
+      we are now at path: /home/deisi/pgAdmin4/pgAdmin4/
+nano lib/python3.8/site-packages/pgadmin4/config_local.py
+
+      Add the following content in config_local.py.
+             import os
+             DATA_DIR = os.path.realpath(os.path.expanduser(u'~/.pgadmin/'))
+             LOG_FILE = os.path.join(DATA_DIR, 'pgadmin4.log')
+             SQLITE_PATH = os.path.join(DATA_DIR, 'pgadmin4.db')
+             SESSION_DB_PATH = os.path.join(DATA_DIR, 'sessions')
+             STORAGE_DIR = os.path.join(DATA_DIR, 'storage')
+             SERVER_MODE = False
+
+pip install flask-htmlmin
+python lib/python3.8/site-packages/pgadmin4/pgAdmin4.py
+
+        Now, access:   http://localhost:5050
+
+
+
