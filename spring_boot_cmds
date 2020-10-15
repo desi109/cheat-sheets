@@ -1,0 +1,85 @@
+
+
+
+-----------------------------------Spring Boot------------------------------------------------------
+     
+     Bootstrap the Spring Boot project:
+spring init --language=java --groupId=com.dmilusheva --artifactId=internships --name=internships --description="Internships application" --package-name=com.dmilusheva.internships --dependencies=web,jpa,postgresql --build=maven --packaging=jar --java-version=11
+
+spring init -l=java -g=com.dmilusheva -a=internships -n=internships --description="Internships application" --package-name=com.dmilusheva.internships -d=web,jpa,postgresql --build=maven -p=jar -j=11
+
+     
+     
+     Help for command init:
+spring --help init
+
+
+
+=====================================================================================================
+=====================================================================================================
+
+
+
+-----------------------------------PostgreSQL--------------------------------------------------------
+     Install PostgreSQL database:
+     This command installs PostgreSQL server and related packages:
+sudo apt-get install postgresql 
+
+
+
+     We check the status of the database with postgresql status command:
+/etc/init.d/postgresql status
+
+
+
+     After the installation, a postgres user with administration priviliges was created with empty 
+     default password. As the first step, we need to set a password for postgres:
+sudo -u postgres psql postgres
+     psql (12.4)
+     Type "help" for help.
+
+     postgres=# \password postgres
+     Enter new password: 1234
+     Enter it again: 1234
+     
+     
+     
+     We create a new database user:
+sudo -u postgres createuser --interactive --password user1234
+     Shall the new role be a superuser? (y/n) n
+     Shall the new role be allowed to create databases? (y/n) y
+     Shall the new role be allowed to create more new roles? (y/n) n
+     Password: 1234
+
+
+
+     We create a new internships database with createdb command, which is going to be owned by user1234 :
+sudo -u postgres createdb internships -O user1234
+
+
+     We edit the pg_hba.conf file:
+sudo nano /etc/postgresql/12/main/pg_hba.conf
+
+
+     In order to be able to run a Spring Boot application with a local PostgreSQL installation, 
+     we change the authentication method for the Unix domain socket and local connections to trust.
+# "local" is for Unix domain socket connections only
+local   all             all                                     trust
+# IPv4 local connections:
+host    all             all             127.0.0.1/32            trust
+
+
+
+     We restart PostgreSQL to enable the changes:
+sudo service postgresql restart
+
+
+     Now we can use the psql tool to connect to the database:
+psql -U user1234 -d internships -W
+     Password for user user1234: 1234
+     psql (12.4)
+     Type "help" for help.
+
+     internships=>
+
+
