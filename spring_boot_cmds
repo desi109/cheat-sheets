@@ -21,6 +21,12 @@ spring --help init
 
 
 -----------------------------------PostgreSQL--------------------------------------------------------
+     
+              https://linuxhint.com/install-pgadmin4-ubuntu/
+     
+  !!!!!!!!   Check this firs: https://www.pgadmin.org/download/pgadmin-4-python/
+     
+     
      Install PostgreSQL database:
      This command installs PostgreSQL server and related packages:
 sudo apt-get install postgresql 
