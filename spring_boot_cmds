@@ -8,10 +8,30 @@ spring init --language=java --groupId=com.dmilusheva --artifactId=internships --
 
 spring init -l=java -g=com.dmilusheva -a=internships -n=internships --description="Internships application" --package-name=com.dmilusheva.internships -d=web,jpa,postgresql --build=maven -p=jar -j=11
 
+spring init -l=java -g=com.dmilusheva -a=internships -n=internships --description="Internships application" --package-name=com.dmilusheva.internships -d=web,jpa,jdbc,postgresql --build=maven -p=war -j=11
+
      
      
      Help for command init:
 spring --help init
+
+
+
+     Run the app:
+cd project-dir-name
+mvn spring-boot:run     
+
+
+     Find what is running on port 8080 :
+netstat -ano | grep 8080
+sudo netstat -ano -p tcp
+netstat -ao | grep LISTEN
+ps -ef | grep 8080
+
+     Kill the process:
+kill -9 $(lsof -t -i:8080)
+
+
 
 
 
@@ -24,7 +44,7 @@ spring --help init
      
               https://linuxhint.com/install-pgadmin4-ubuntu/
      
-  !!!!!!!!   Check this firs: https://www.pgadmin.org/download/pgadmin-4-python/
+  !!!!!!!!   Check this first: https://www.pgadmin.org/download/pgadmin-4-python/
      
      
      Install PostgreSQL database:
@@ -86,13 +106,51 @@ psql -U user1234 -d internships -W
      psql (12.4)
      Type "help" for help.
 
-     internships=>
+     internships=> 
+     
+     
+Note: It was set port -> 8080 by default for this app
+
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+---------------------------------------------------------------------------------------------------------
+
+
+ 
+      If we have user1234, how to create a new conference_app database, 
+      which is going to be owned by user1234 :
+      
+sudo -u postgres createdb conference_app -O user1234
+sudo service postgresql restart
+psql -U user1234 -d conference_app -W
+     Password: 1234
+     psql (12.4 (Ubuntu 12.4-1))
+     Type "help" for help.
+     
+     conference_app=> \q               --> to exit
+     
+     
+
+     Let's create and insert tables and data from existing .sql files:
+cd ~/github/conference/db_scripts
+psql -U user1234 -d conference_app -f create_tables.sql
+psql -U user1234 -d conference_app -f insert_data.sql
+
+
+Note: I set port -> 5000 for this app
+
+
+---------------------------------------------------------------------------------------------------------
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+=====================================================================================================
+=====================================================================================================
 
 
 
 
 
-
+-----------------------------------pgAdmin4 (installation)--------------------------------------------------
 
 sudo apt update
 sudo apt install build-essential libssl-dev libffi-dev libgmp3-dev virtualenv python-pip libpq-dev python-dev
@@ -128,3 +186,18 @@ python lib/python3.8/site-packages/pgadmin4/pgAdmin4.py
 
 
 
+------------------------
+        To start it:  
+cd ~/pgAdmin4/pgAdmin4/
+source bin/activate
+python lib/python3.8/site-packages/pgadmin4/pgAdmin4.py
+
+        Now, go to:   http://localhost:5050
+
+
+        How to connect to my database using pgadmin4:
+        https://stackoverflow.com/questions/41873779/connection-with-my-db-using-pgadmin4
+        
+        
+        Tutorial - pgadmin4/
+        https://linuxhint.com/pgadmin4_tutorial_beginners/
