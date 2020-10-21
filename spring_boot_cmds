@@ -33,7 +33,20 @@ kill -9 $(lsof -t -i:8080)
 
 
 
+     To make a JAR package from project:
+cd project-dir-name
+mvn package
+      And it is in folder -> target
+      
+      
+      To run the JAR file:   (for every system)
+cd target
+java -jar project-name-0.0.1-SNAPSHOT.jar 
 
+
+       To run the JAR file:   (for UNIX based systems)
+cd target/
+./conference-0.0.1-SNAPSHOT.jar 
 
 =====================================================================================================
 =====================================================================================================
