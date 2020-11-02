@@ -8,7 +8,7 @@ spring init --language=java --groupId=com.dmilusheva --artifactId=internships --
 
 spring init -l=java -g=com.dmilusheva -a=internships -n=internships --description="Internships application" --package-name=com.dmilusheva.internships -d=web,jpa,postgresql --build=maven -p=jar -j=11
 
-spring init -l=java -g=com.dmilusheva -a=internships -n=internships --description="Internships application" --package-name=com.dmilusheva.internships -d=web,jpa,jdbc,postgresql --build=maven -p=war -j=11
+spring init -l=java -g=com.dmilusheva -a=internships -n=internships --description="Internships application" --package-name=com.dmilusheva.internships -d=web,jpa,postgresql --build=maven -p=war -j=11
 
      
      
