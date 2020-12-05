@@ -196,6 +196,7 @@ pip install flask-htmlmin
 python lib/python3.8/site-packages/pgadmin4/pgAdmin4.py
 
         Now, access:   http://localhost:5050
+           password:   1234
 
 
 
