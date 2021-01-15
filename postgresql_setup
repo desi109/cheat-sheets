@@ -1,0 +1,86 @@
+
+-----------------------------------PostgreSQL--------------------------------------------------------
+     
+              https://linuxhint.com/install-pgadmin4-ubuntu/
+     
+  !!!!!!!!   Check this first: https://www.pgadmin.org/download/pgadmin-4-python/
+     
+     
+Install PostgreSQL server:
+---------------------------
+
+    Install PostgreSQL
+sudo apt-get update && sudo apt-get install postgresql
+
+
+
+     Check the status of the database with postgresql status command:
+/etc/init.d/postgresql status
+
+
+
+     After the installation, a postgres user with administration priviliges was created with empty 
+     default password. As the first step, we need to set a password for postgres:
+sudo -u postgres psql postgres
+     psql (12.4)
+     Type "help" for help.
+
+     postgres=# \password postgres
+     Enter new password: 1234
+     Enter it again: 1234
+     
+     
+     
+     Create a new database user:
+sudo -u postgres createuser --interactive --password user1234
+     Shall the new role be a superuser? (y/n) n
+     Shall the new role be allowed to create databases? (y/n) y
+     Shall the new role be allowed to create more new roles? (y/n) n
+     Password: 1234
+    
+
+      Edit the pg_hba.conf file (version can be different from 13):
+sudo gedit /etc/postgresql/13/main/pg_hba.conf
+
+
+     In order to be able to run a Spring Boot application with a local PostgreSQL installation, 
+     we change the authentication method for the Unix domain socket and local connections to trust.
+# "local" is for Unix domain socket connections only
+local   all             all                                     trust
+# IPv4 local connections:
+host    all             all             127.0.0.1/32            trust
+
+
+
+    Restart PostgreSQL to enable the changes:
+sudo service postgresql restart
+
+
+
+
+
+Uninstall PostgreSQL server:
+-----------------------------
+    
+    Follow the commands:
+
+sudo apt-get --purge remove postgresql
+  
+    List all postgres related packages:
+dpkg -l | grep postgres
+
+    Remove all the above listed packages using the command :
+apt-get --purge remove package1 package2 ...
+    
+    Confirm all the files and folders related to postgres/postgresql are deleted using the command :
+whereis postgres
+whereis postgresql 
+
+    Remove all the files and folders listed using rm command.
+sudo rm -rf /var/lib/postgresql/
+sudo rm -rf /var/log/postgresql/
+sudo rm -rf /etc/postgresql/
+
+    Delete the user postgres using the command :
+userdel -f postgres
+
