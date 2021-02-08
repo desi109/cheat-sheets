@@ -1,0 +1,174 @@
+ Migrating from Wordpress to GitHub Pages
+--------------------------------------------------------------------------------------
+
+ GitHub Pages runs on top of the GitHub platform and is powered by Jekyll, 
+ a templating engine that translates Markdown to static HTML.
+
+
+Step 1:
+-------
+    Create a GitHub repository named  <username>.github.io .
+    Clone the repository to your computer:
+    
+git clone https://github.com/<username>/<username>.github.io.git
+
+
+
+Step 2:
+-------
+    Install Ruby:
+ sudo apt-get install ruby-full
+ ruby -v   --> to check the version
+ 
+ 
+    Install the following gems for Ruby:
+     - Bundler
+     - Jekyll (latest supported versions -> https://pages.github.com/versions/ )
+sudo gem install bundler
+sudo gem install jekyll -v 3.9.0
+
+    
+    Now create your Jekyll site with Bundler:
+bundle init
+bundle add jekyll -v 3.9.0 --skip-install
+bundle exec jekyll new --force --skip-bundle .
+
+
+    Jekyll allows you to run your site locally, which comes in very handy if 
+    you need to check how your posts look before making them public:
+bundle install
+bundle exec jekyll serve
+
+    Go to http://localhost:4000 .
+
+
+    You can customize the site’s title, contact information, and social media
+    links by updating the corresponding properties on the _config.yml YAML file.
+    Add the following property show an excerpt of my posts on the home page:
+show_excerpts: true
+    And changed the default post URLs to only include the title:
+permalink: /:title/
+
+    Some of this configuration parameters are theme specific. Check out the default
+    theme for a full list of available settings.
+
+
+
+
+Step 3:
+-------
+     Exporting Workdpress Posts 
+     https://www.deadlyfingers.net/code/migrating-from-wordpress-to-github-pages
+     
+     Log into you Wordpress admin console and go to the following URL:
+     https://your-domain/wp-admin/export.php
+     
+     Select 'All Content' and download. The export file is in XML format and 
+     contains references to images and other assets. 
+     Use the jekyll-import Ruby gem to convert the exported files into HTML and
+     download all images to the assets directory.
+
+     Install the following Gems:
+sudo gem install jekyll-import
+sudo gem install hpricot
+sudo gem install open_uri_redirections
+sudo gem install reverse_markdown
+     
+     Run this command:
+ruby -r rubygems -e 'require "jekyll-import";
+    JekyllImport::Importers::Blogger.run({
+      "source" => "/path/to/blog-MM-DD-YYYY.xml",
+  "no_fetch_images" => false,
+  "assets_folder" => "assets/images"
+})'
+ 
+ 
+     Lastly, use the following Ruby script
+     (https://gist.github.com/deadlyfingers/2023c61cbac83bb613393f262693cdf4) 
+     to convert the HTML content to Markdown:
+ruby ./wordpress-html-to-md.rb "_posts"
+     
+     All you have to do now is copy the entire assets folder to the root of your 
+     Jekyll project and move all the .md files generate by the scrip from the _posts
+     folder into the _posts folder of your Jekyll’s site.
+
+     Re-run you site locally and verify that all your posts are being listed on the
+     home page.
+     
+     
+     Now you can start customizing your site to your own needs. However, here are
+     a couple of things you might want to do to “clean up” your posts. If you open
+     one of the Markdown files you’ll see a bunch of metadata fields at the top of
+     the page. The following fields are not needed and can be removed from all your 
+     posts:
+            type
+            parent_id
+            published
+            password
+            status
+            meta
+            author
+            
+     In addition, some posts might contain absolute URLs referencing other posts. 
+     Absolute URLs are discouraged since they make your site less portable. Run the
+     following sed command to replace absolute URLs with relative URLs. 
+     Replace <your-domain> with the domain for your site:
+     
+sed -i.bak 's/https:\/\/<your-domain>//g' *.md
+
+
+--------------------------------------------------------------------------------------
+
+
+
+https://guillermo-roman.com/migrating-wordpress-blog-to-github-pages/
+https://www.bawbgale.com/from-wordpress-to-jekyll/
+https://www.deadlyfingers.net/code/migrating-from-wordpress-to-github-pages
+
+https://devhints.io/jekyll
+https://github.com/jekyll/minima
+https://blog.webjeda.com/wordpress-to-jekyll-migration/
+
+
+
+
+
+
+Run your site locally
+----------------------
+
+bundle exec jekyll serve
+    Go to http://localhost:4000 .
+    
+    To stop it:
+kill -9 $(lsof -t -i:4000)
+
+    
+
+
+Step 1: Install Jekyll Export
+        Jekyll Export is a WordPress plugin built by Ben Balter.
+        Install this plugin and run it. Everything will be exported and
+        downloaded as export.zip.
+
+Step 2: Unzip and serve using Jekyll
+
+
+        For linux:
+unzip jekyll-export.zip 
+        If there is a problem, try:
+jar xvf jekyll-export.zip 
+
+
+        Unzip the downloaded zip folder. It should have all the necessary
+        files like _posts,    _config.yml, index.html, wp-content etc.
+
+        We need only _posts, wp-content and other required HTML pages. 
+        Move these folders to a Jekyll theme. Test it locally. If everything
+        works then upload the site to a repository on Github Pages.
+
+
+
+    
+
+
