@@ -122,6 +122,10 @@ npm init
        version (pess Enter), description (type - backend for the eshop),
        the entry point op the app (type - app.js), for the other things keep 
        pressing Enter.
+       Is this OK? (yes) ---> press Enter
        
+       
+       
+       Then create app.js file.
        
 

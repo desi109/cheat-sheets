@@ -1,0 +1,158 @@
+    Software Architechture   -->   Quality Attributes
+   -------------------------      =====================
+
+   http://www.softwarearchitectures.com/
+   
+   
+   
+    Responsiveness - System reaction time.
+                   - This attribute is defined as the speed of the system to respond 
+                     to a user request.
+                     
+         Usability - This is the ability of the customer to perform their work with
+                     the system in an efficient and enjoyable way.
+                   - Working with the system should be based on skills that the user 
+                     already has and not require new or unique knowledge to use 
+                     the system.
+                   - Each new function that the user encounters must follow a similar
+                     pattern so that once the user has learned one function, the others
+                     can learn intuitively (consistency).
+                   - Composition of usability: 
+                         Learnability - How easy it is for users of a system to perform
+                                        basic tasks.
+                           Efficiency - Once users learn the basics of the user interface,
+                                        how fast they can complete tasks.
+                         Memorability - When users return to the system after a period in
+                                        which they have not used it, how easily they can
+                                        regain their skill.
+                               Errors - How many mistakes users make, how severe these
+                                        mistakes are and how easily they can recover from
+                                        the mistakes made.
+                        Sattisfaction - How pleasant it is to work with the system.
+                   - RULES: 1.DON'T MAKE ME THINK?
+                            https://www.amazon.com/Dont-Make-Me-Think-Usability/dp/0321344758
+                            2.GET TO KNOW YOUR USERS?
+                            3.BE CONSTANT!  -> DISCUSSION…
+                            https://www.softwaretestinghelp.com/best-usability-testing-tools/
+                            
+  Distributability - The ability to manage a group of systems as a whole and to manage from
+                     anywhere in the network.
+                   - It must be determined whether a component will run in the main process
+                     or in a stand-alone process on the same machine or on a remote machine
+                     (server).
+                     
+    Serviceability - The ability to monitor systems during their operation, identify 
+                     problems, perform analysis of the root causes of these problems.
+                   - The main goal is to discover and solve problems, i.e. restoring 
+                     the system to working state.
+                   - This attribute refers to the ability to technically maintain, 
+                     identify, and debug systems without shutting down systems.
+                     Problems may be reported by customers or service representatives.
+                   - Each system must have a module that supports the Error log. 
+                     If necessary, this module is configured to generate error messages
+                     with varying degrees of detail. The module can automatically notify 
+                     the persons responsible for the maintenance of the system of the 
+                     occurrence of a problem via e-mail or other communication channel.
+                     
+     Extensibility - It is a principle in software engineering and systems design that
+                     provides future development or growth. Extensions can be by adding
+                     new functionality or by modifying an existing one. 
+                   - The principle provides for improvements without compromising existing
+                     system functions.
+                   - Extension Mechanisms:
+                            White-Box - is performed if the source code of the system is
+                                        available with or without its modification.
+                             Open-Box - approach with modification of the source code. 
+                                        The most flexible approach.
+                            Glass-Box - approach without direct replacement of the original
+                                        source code.
+                            Black-Box - extension without access to the source code of the
+                                        system, uses documentation of available programming
+                                        interfaces and adding new modules.
+                             Gray-Box - a compromise option that does not rely entirely on
+                                        access to source code. Uses part of the code, mostly
+                                        describing the program interfaces.              
+                   
+       Scalability - The ability to the system to cope with the increase in load without
+                     reducing its productivity. 
+                   - The need for scalability may arise when:
+                        * increasing the number of users of the system;
+                        * increasing the volume of processed;
+                   - Types of Scalability:
+                        Horizontal (Scale Out) - is the addition / implementation of
+                                                 additional modules of the same type, 
+                                                 most often running on separate servers
+                                                 (Load Balancing).
+                           Vertical (Scale Up) - adding resources to an existing computing
+                                                 node (server) - adding processor, memory,
+                                                 network bandwidth.
+                          Database scalability - for the database.
+                          
+   Maintainability - This attribute is related to the ease with which a product can be
+                     maintained, with the ability to:
+                        * correction of defects or their cause;
+                        * repairing or replacing defective or worn components without
+                          having to replace working parts;
+                        * prevention of unexpected working conditions;
+                        * increase the useful life of the product;
+                        * maximum efficiency, reliability and safety;
+                        * meeting the new requirements;
+                        * facilitate future maintenance or deal with a changed environment;
+                        
+          Security - It is an attribute related to the degree of protection of data from
+                     unauthorized access to them, providing user identification.
+                   - Security associated with:
+                        * Identification - a process in which the user declares his
+                                           identity - by username or identification code;
+                        * Authentication - a process by which the user proves his identity 
+                                           - by entering a password, pin code, fingerprint;
+                        * Authorization - the process of granting rights to perform
+                                          activities after users are authenticated;
+                        * Audit
+                        * Encryption
+
+       Portability - High level portability is the usability of the same software in
+                     different environments. A prerequisite for portability is the
+                     generalized abstraction between the logic of the application 
+                     and the system interfaces. 
+                   - When producing software with the same functionality for multiple
+                     computer platforms, portability is essential problem to reduce
+                     development costs.
+                     
+       Reliability - Reliability indicators are used to quantify the reliability of the
+                     software product. The variant of using a certain indicator depends 
+                     on the type of system to which it is applied and on the requirements 
+                     of the field of application. 
+                   - The reliability indicators that can be used to quantify the reliability
+                     of the software product are the following:
+                          * Mean Time to Failure (MTTF) - described as time interval between
+                                                          two consecutive failures.
+                          * Mean Time to Repair (MTTR):
+                              If an error occurs, it takes some time to correct it. 
+                              The MTTR measures the average time required to track 
+                              faults causing damage and to rectify them. Mathematically
+                              speaking, this is the total time for fault correction time
+                              divided by the total number of fault correction actions over
+                              a given period of time.
+                          * Mean Time Between Failure (MTBR) -   MTBF = MTTF + MTTR
+                              MTBF can be calculated as arithmetic mean (mean) time
+                              between system failures.
+                     
+       Testability - Software verification is the extent to which a software artifact 
+                     (i.e. software system, software module, requirements or design 
+                     document) supports testing in a given test context.
+                   - If the test life of the software artifact is high, then finding 
+                     faults in the system (if any) by testing is easier.
+                     
+    Compatiability - Forward Compatiability - This is a design compatibility that allows
+                     the system to accept input intended for a later version of itself.
+                     The concept can be applied to entire electrical systems interfaces,
+                     telecommunication signals, protocols for data communication, file
+                     formats and languages ​​for programming. A design that is compatible
+                     with this attribute usually has roadmap for compatibility with future
+                     standards and products.
+                   - Backwards Compatiability - This is a property of a system product or
+                     technology that allows operational compatibility with older legacy
+                     system or with input, intended for such a system, especially in
+                     telecommunications and computer technology.
+
