@@ -1,0 +1,449 @@
+ Jenkins - Setup:        😉️ <- (fn lock + ctrl + :)
+ -----------------
+
+
+
+-----------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------
+
+Part 1: Configure and Install VirtualBox/PuTTY
+------------------------------------------------
+
+    1 - VM with Cent OS 7  (use Oracle VirtualBox - https://www.virtualbox.org/)
+        From the VirtualBox menu select -> Red Hat (64-bit). Then Next -> Next -> ...
+  
+  
+  
+    2 - Download .iso file (image for Cent OS 7)
+        http://isoredirect.centos.org/centos/7/isos/x86_64/
+  
+    From here: http://centos.uni-sofia.bg/centos/7.9.2009/isos/x86_64/
+    Download: CentOS-7-x86_64-DVD-2009.iso  
+    
+    user(root): root
+    password: toor
+    
+    user: vmjenkins
+    password: jenkins
+    
+    To arrow exit: click right button -> Ctrl 
+    
+    
+    
+    3 - Use SSH sessions to connect to the VM (use PuTTY - https://www.chiark.greenend.org.uk/)
+        PuTTY Documentation: https://the.earth.li/~sgtatham/putty/0.74/htmldoc/
+  
+  
+        How to install PuTTY on Linux OS laptop? 
+        -> https://www.tecmint.com/install-putty-on-linux/
+sudo add-apt-repository universe
+sudo apt update
+sudo apt install putty
+
+
+
+    4 - Configure the SSh session via Putty.
+    
+        Go to File -> Host Network Manager -> Create. And create new adapter with default
+        settings.
+        Go to VirtualBox (to your Jenkins - Cent OS 7  VM) and open Settings.
+        Open Network -> Adapter 1
+        Choose:
+             Attached to: Host-only Adapter
+             Name: vboxnet0
+             ...
+             Adapter Type: ...Desktop
+             Promiscuous Mode: Allow All
+             
+             
+        You need the IP address of the Cent OS 7 virtual machine to set up the PuTTY.
+        Start the VM  and try command:   
+ip a     
+        If there is no ip address printed for enp0s3, do next steps (I. - III.).
+        
+        I. Set up ifcfg-enp0s3 settings:
+curl www.google.com
+sudo vi /etc/sysconfig/network-scripts/ifcfg-enp0s3
+
+        II. Update the two parameters as given below and save the file.
+        BOOTPROTO=”dhcp”
+        ONBOOT=”yes”
+        
+        III. Restart and check if it is ok.
+sudo systemctl restart network
+curl www.google.com
+ip a
+
+============================================================================================
+--------------------------------DO NOT DO THIS----------------------------------------------  
+   
+        Go and edit next params (https://www.itzgeek.com/how-tos/linux/centos-how-tos/how-to-configure-static-ip-address-in-centos-7-rhel-7-fedora-26.html):
+vi /etc/sysconfig/network-scripts/ifcfg-enp0s3
+
+               TYPE=Ethernet
+               PROXY_METHOD=none
+               BROWSER_ONLY=no
+               
+               # Static IP Address #
+               BOOTPROTO=dhcp
+               
+               # Server IP #
+               IPADDR=192.168.56.101
+               
+               # Netmask #
+               NETMASK=255.255.255.0
+               
+               # Default Gateway IP #
+               GATEWAY=192.168.1.1
+
+               # DNS Servers #
+               DNS1=192.168.1.1
+               DNS2=8.8.8.8
+               DEFROUTE=yes
+               IPV4_FAILURE_FATAL=no
+ 
+               # Disable ipv6 #
+               IPV6INIT=yes
+               IPV6_AUTOCONF=yes
+               IPV6_DEFROUTR=yes
+               IPV6_FAILURE_FATAL=no
+               IPV6_ADDR_GEN_MODE=stable-privacy
+               
+               # Device Name #
+               NAME=enp0s3
+               DEVICE=enp0s3
+               
+               # Optional – This is system specific and can be created using ‘uuidgen enp0s3’ command #
+               UUID=02d4a47b-3dbe-4e0b-ae4b-841a8c58e807
+
+              # Activate on Boot #
+              ONBOOT=yes
+
+              # Default Domain Search #
+              DOMAIN=jenkins.noodle.tetra
+
+
+------------------------------------------------------------------------------------------- 
+============================================================================================
+
+
+        Restart it:   
+systemctl restart network
+ip a
+
+
+        
+        The ip address will be under enp0s3.
+        For example:
+        
+        2: enp0s3: ....
+             inet 192.168.56.101/24  brd 192.168.100.255 scope global noprefixroute dyna..
+             valid_lft 7142sec preferred_lft 7142sec
+             inet6  ..... 
+        
+        Your ip address is:  192.168.56.101
+        Open PuTTY. If you want edit font size (from menu -> Window -> Fonts).
+        If you want use copy-paste shortcuts:
+          from menu -> Selection -> select Auto-copy selected text to clipboard
+                                    Mouse paste action: CLIPBOARD
+                                    {Ctrl,Shift}+Ins: CLIPBOARD
+                                    Ctrl+shift+{C,V}: CLIPBOARD
+                                    
+        
+        To start a session, go to Session and configure it:
+             Host Name(or IP address):               Port:
+             192.168.56.101                         22
+        
+             Connecton type:
+             *SSH
+        
+             Saved Sessionas:
+             Jenkins - Cent OS 7        ->   Then click Save.
+        
+             Close window on exit:
+             *Always
+             
+             ->   Then click Open.
+             
+        
+        
+        
+        Other helpful links:        
+        https://medium.com/@jithz/install-centos-on-virtualbox-on-windows-host-and-connect-from-putty-d047afda2788
+        
+        Work with vi -> https://www.cs.colostate.edu/helpdocs/vi.html
+        
+        
+
+-----------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------
+
+Part 2: Configure and Install Jenkins
+--------------------------------------
+
+       Jenkins Documentation:  https://www.jenkins.io/doc/book/installing/linux/
+       
+       
+       
+       Install Jenkins for Cent OS:
+       https://www.jenkins.io/doc/book/installing/linux/#red-hat-centos
+       
+       Before start:
+sudo yum update
+sydo yum upgrade
+
+
+       In order to install Jenkins on your Linux instance you will need to ensure
+       that Java has been installed.
+       Jenkins project performs a full test flow with the following JDK/JREs: 
+        * OpenJDK JDK / JRE 8 - 64 bits
+        * OpenJDK JDK / JRE 11 - 64 bits 
+yum update
+yum install java-1.8.0-openjdk
+java -version
+
+       The next step is to configure your own JAVA_HOME directory environment variable.
+       To do this we just need to know where our Java runtime is installed by default on
+       the Cent OS system. Java is installed in:  
+cd /usr/lib/jvm
+ls -lA
+cd java-1.8.0-openjdk-1.8.0.282.b08-1.el7_9.x86_64
+       Most programs which need JAVA runtime will need knowledge about this path.
+       Set up this path in an environment variable called JAVA_HOME.
+       Now to set up our JAVA_HOME environment variable for our current log on user
+       which is the root user, we need to edit our bash_profile file.
+vi ~/.bash_profile
+
+       The bash_profile file should looks like this:
+           # .bash_profile
+           # Get the aliases and functions
+           if [ -f ~/.bashrc ]; then
+                         . ~/.bashrc
+           fi
+
+           # User specific environment and startup programs
+           export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.282.b08-1.el7_9.x86_64
+           PATH=$PATH:$HOME/bin:$JAVA_HOME/bin
+
+           export PATH
+
+
+       For this change to take effect, let's reload the profile. 
+       Then check is JAVA_HOME is set properly.
+su -
+echo $JAVA_HOME
+
+
+
+
+        Start Jenkins install steps:
+yum install wget
+wget -O /etc/yum.repos.d/jenkins.repo \
+    https://pkg.jenkins.io/redhat-stable/jenkins.repo
+    
+rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+yum install jenkins 
+
+
+        Start Jenkins service with the command:
+systemctl start jenkins
+        OR better:
+service jenkins start
+service jenkins stop
+service jenkins restart
+         
+         
+        Now obviously it will not be very convenient if you have to start Jenkins manually 
+        every time. It will be great if the service started automatically as our Linux system 
+        boots up this next command achieves just that.
+chkconfig jenkins on
+        
+        
+
+        Check Jenkins status:
+service jenkins status
+
+        If everything has been set up correctly, you should see an output like this:
+             ● jenkins.service - LSB: Jenkins Automation Server
+   Loaded: loaded (/etc/rc.d/init.d/jenkins; bad; vendor preset: disabled)
+   Active: active (running) since Sun 2021-02-28 15:11:20 EST; 5min ago
+     Docs: man:systemd-sysv-generator(8)
+   CGroup: /system.slice/jenkins.service
+           └─18412 /etc/alternatives/java -Dcom.sun.akuma.Daemon=daemonized -...
+
+
+
+
+        Since this is a vanilla version of Cent OS version 7, this particular Linux
+        machine doesn't have any graphical interface at all. That is why the only way
+        for us to access the Jenkins user interface is to navigate to our Jenkin's
+        instance from our host machine using a web browser. But this virtual machine
+        has been installed with bridge adapter mode. That is why the only way for us
+        to access our Jenkins service is to manage special host files in our host 
+        (reall) machine. To modify that file, we will launch command prompt/terminal
+        on our host machine with administrator privileges and:
+        
+        For Windows:
+        Navigate to " C:\Windows\System32\drivers\etc" to edit our hosts file.
+cd C:\Windows\System32\drivers\etc
+notepad hosts
+        This host files helps the Windows system in DNS and IP resolution for our host.
+        All we need is to get our IP address from our Cent OS machine and input it here in
+        our hosts file. 
+ip a
+        Also to map this IP address we need to get our hostname from our CentOS
+        machine. We can get it by executing the command:
+hostname
+        So paste next in the hosts file:
+               192.168.56.101 jenkins.noodle.tetra
+               
+        
+        
+               
+        Tip: You can change the Cent OS hostname to -> jenkins.noodle.tetra
+hostnamectl set-hostname jenkins.noodle.tetra
+        
+
+        
+        
+        For Linux (Ubuntu):  https://www.configserverfirewall.com/ubuntu-linux/hosts-file/
+sudo vi /etc/hosts
+        And paste next in the hosts file:
+               192.168.56.101 jenkins.noodle.tetra
+
+
+
+        Maybe If you have a firewall installed on your Cent OS, you must add Jenkins as
+        an exception. 
+         -- You must change YOUR PORT in the script below to the port you want to use. 
+            Port 8080 is the most common. --
+            
+firewall-cmd --permanent --new-service=jenkins
+firewall-cmd --permanent --service=jenkins --set-short="Jenkins ports"
+firewall-cmd --permanent --service=jenkins --set-description="Jenkins port exceptions"
+firewall-cmd --permanent --service=jenkins --add-port=8080/tcp
+firewall-cmd --permanent --add-service=jenkins
+firewall-cmd --zone=public --add-service=http --permanent
+firewall-cmd --reload
+firewall-cmd --list-all
+
+        
+        Now if we navigate to "jenkins.noodle.tetra:8080" in our browser on the host machine
+        it will direct us to the virtual machine. 
+        To get the default admin password for Jenkins, open next  location on your Cent OS vm:
+vi /var/lib/jenkins/secrets/initialAdminPassword
+---> 5205ecba71ea4ac6afc69b6f0a2b5420
+
+        
+        Copy it and paste it in your browser of your host machine.
+        Then Next.
+        Choose "Select plugins to install".
+         
+        Go to "Organization and Administration" and choose also "Dashboard View".
+        Go to "Pipelines and Continuous Delivery" and choose also "Copy Artifact".     
+        Go to "Source Code Management" and choose also "Bitbucket", "GitHub", "Subversion".
+        Go to "Notifications and Publishing" and select "Publish Over SSH", "SSH".
+
+
+        User: admin
+        New password: jenkins-pipe
+        
+        
+        Change Jenkins language: https://superuser.com/questions/879392/how-force-jenkins-to-show-ui-always-in-english
+        
+        
+        
+        To remove Jenkins: https://stackoverflow.com/questions/38604715/how-can-i-remove-jenkins-completely-from-linux
+
+
+
+
+
+-----------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------
+
+Part 3: Configurations of Jenkins plugins
+------------------------------------------
+ 
+        Maven: https://tecadmin.net/install-apache-maven-on-centos/
+       -------
+
+java -version
+
+        Install Appache Maven:
+cd /opt
+wget https://www-eu.apache.org/dist/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz
+tar xzf apache-maven-3.6.3-bin.tar.gz
+ln -s apache-maven-3.6.3 maven
+
+        Setup environment variables
+vi /etc/profile.d/maven.sh
+
+        Paste the following lines:
+              # Apache Maven Environmental Variables
+              
+              export M2_HOME=/opt/maven
+              export PATH=${M2_HOME}/bin:${PATH}
+        
+        Save and close the file. This script will be sourced at shell startup.
+        Make the script executable by running the following chmod command:  
+chmod +x /etc/profile.d/maven.sh
+
+        Load the environment variables using the source command:
+source /etc/profile.d/maven.sh        
+  
+
+        Verify the installation:
+java -version     
+mvn -version
+echo $JAVA_HOME
+echo $M2_HOME
+
+
+
+
+
+
+
+-----------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------
+
+Part 4: Create first job
+-------------------------
+
+
+        Enter an item name: test
+        + Freestyle project
+        Then OK.
+   
+   
+   General ----------------------------------------------------------------------------
+        
+        Description -> is just a descriptive text which explains what is the purpose
+                       of this job. This description value can be optional.
+
+
+        + This project to be a parameterized -> Add Parameter ->
+            -> By selecting this option what does this mean. It means that you can
+               add any parameters to your job. These parameters can be used as 
+               placeholders in your job definition or steps and the actual values          
+               of the parameters can be passed in at runtime. It can be a special
+               password, a special string parameter, file parameter or some other
+               options. These parameters make the job very flexible and portable.
+
+
+   Source Code Management----------------------------------------------------------------
+
+        In most build pipelines, this is one of the most important and basic steps
+        we need to configure. Basically your continuous integration and continuous
+        delivery process start with these options because in most cases the DevOps
+        pipelines need to put current source code for compiling and building the 
+        source and producing the build artifacts. Your source code could live in
+        repositories like Git or SVN or any other tool. 
+
+
+
+
+
+
+       

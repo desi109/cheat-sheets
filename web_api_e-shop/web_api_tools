@@ -1,0 +1,127 @@
+  
+   Web API (E-Commerce) - Tools and Setup
+ ------------------------------------------
+ 
+ 
+ 
+=================================================================================
+ 1.  Node.js :    (https://nodejs.org/en/)
+---------------
+
+sudo apt-get update
+sudo apt install nodejs
+sudo apt install npm
+
+node -v
+npm -v
+npm version
+
+
+
+
+=================================================================================
+ 2. Visual Studio Code : 
+-------------------------
+
+       To open VSC terminal:  Ctrl + J
+       
+       
+   ********************************************************************
+       How to configure copy-paste in VSC terminal?       
+       Open the keyboard shortcuts preferences: Ctrl+ Shift + P 
+       Search for: Open keyboard shortcuts 
+       Then, search for -> Terminal: Copy
+                           Terminal: Paste into Active Terminal
+       And change their shortcuts.
+   ********************************************************************
+       
+       
+       
+       Install also extensions for JavaScript:  
+       https://code.visualstudio.com/docs/nodejs/extensions
+           - Prettier - Code formatter
+           - Node.js Extension Pack
+           
+           
+       Configure Prettier to automatically format your code every time you save the project.
+       Open you project directory from VSC and click:  Ctrl + Shift + P
+       Search for: Prettier: Create Configuratiom File
+       That will create the needed configuration for the Prettier extension.
+       We also need to install the library Prettier from npm.
+       Open VSC terminal (Ctrl + J). 
+       Now create package JSON file, which is hosting the libraries that we need.
+npm init
+npm install prettier
+       To set up Prettie: Ctrl + Shift + I
+       Select Configure and search for Prettire. Choose it.
+       
+       From:  https://prettier.io/docs/en/configuration.html
+       You can copy-paste configurations to .prettierrc file 
+       if you want different formatting configurations.
+       
+       
+       
+       TO CODE FORMAT:  Ctrl + Shift + I
+       
+       
+       
+       
+=================================================================================
+ 3. Postman - for testing web APIs : 
+-------------------------------------
+
+       https://github.com/postmanlabs/postman-app-support
+       
+       Download it from: https://dl.pstmn.io/download/channel/canary/linux_64   
+       Or from Ubuntu Software.    
+       
+       
+       
+       
+=================================================================================
+ 4. MongoDB - database : 
+-------------------------
+
+
+       For the eShop, we need to have a database.
+       We don't need to install any software because we would use MongoDB Atlus.
+       MongoDB is offering now an online database storage, which means that the database
+       is already in the cloud. 
+       What we just need to go to:  https://account.mongodb.com/account/login
+       Create an account and sign up. 
+       After logging, you will see this screen that you need to create a project.
+
+       So first of all, you need to create a project for our eShop.
+       Go to:  Projects -> Create New Project -> type Name of the project 
+               -> Next -> Create Project
+               
+       After that the project requires a cluster so click:  Build a Cluster
+       Select: Shared Clusters (FREE)  -> Create
+       Choose the closest server to your country:  Europ (Frankfurt)
+       Click the green button (right, down):  Create Cluster
+       
+       Now we are ready to create our database. The database in MongoDB is called
+       collection, so create a new one by clicking on: Collections 
+      
+
+
+
+=================================================================================       
+=================================================================================     
+=================================================================================
+ 5. Build the file structure : 
+-------------------------------
+
+       In your project directory, make folders from VSC terminal:
+mkdir backend
+cd backend
+       Create the backend (web) server with Express, where we will call
+       our APIs to the client:
+npm init
+       It will ask for a package name (type - backend),
+       version (pess Enter), description (type - backend for the eshop),
+       the entry point op the app (type - app.js), for the other things keep 
+       pressing Enter.
+       
+       
+
