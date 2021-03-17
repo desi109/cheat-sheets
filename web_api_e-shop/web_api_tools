@@ -127,5 +127,459 @@ npm init
        
        
        Then create app.js file.
-       
+       In your package.json file, add:
+               "dependencies": {
+                 "nodemon":"^2.0.7"
+                },
+                
+                
+        Add also START:
+                "scripts": {
+                  "start": "nodemon app.js",
+                  "test": "echo \"Error: no test specified\" && exit 1"
+                 },
+                 
+        In the app.js file, add -->  console.log("Hello Worls!");
+        And save it.
+        
+        
+        
+      ===================================================================================     
+        Nodemon
+        -------
+        https://www.npmjs.com/package/nodemon
+        Nodemon is a tool that helps develop node.js based applications by automatically
+        restarting the node application when file changes in the directory are detected.
+        Nodemon does not require any additional changes to your code or method of
+        development. nodemon is a replacement wrapper for node. 
+        
+      ===================================================================================  
+        
+        
+        Install Nodemon and start it:
+        May need to run it with --> sudo .
+npm install -g nodemon
+npm start
 
+        You should see:
+        $ npm start
+
+        > backend@1.0.0 start
+        > nodemon app.js
+
+        [nodemon] 2.0.7             
+        [nodemon] to restart at any time, enter `rs`
+        [nodemon] watching path(s): *.*
+        [nodemon] watching extensions: js,mjs,json
+        [nodemon] starting `node app.js`
+        Hello Worls!
+        [nodemon] clean exit - waiting for changes before restart
+        
+        
+        
+        
+      =================================================================================== 
+        Express.js
+       ------------
+        https://www.npmjs.com/package/express
+        Express is a famous library form Node.js, to host a server.
+        
+      =================================================================================== 
+      
+        To create a web server, install Express.js and start it: 
+npm install express
+
+        Check if there is new dependency added to the package.json file.
+        
+        
+        Add next to the app.js file:
+                 const express = require('express');
+                 const app = express();
+
+                 app.listen(3000, ()=>{
+                     console.log('server is running  http://localhost:3000')
+                 })
+                 
+                 
+        Then start it:
+npm start
+         Open the browser and go to: http://localhost:3000
+         You should see:  Cannot GET /
+         This is because we did not specify any initial route for the application.
+         So to create it, after 'const app' add:
+                          app.get('/', (req, res) => {
+                              res.send('Hello API!');
+                          })
+
+         It will accept two parameters. The first one is the route itself.
+         We will use the initial route or the root --> '/' .
+         
+         
+         So the second parameter will be a callback. The callback will have the response,
+         which we will send to the client when he call this route.
+         So we will say: "In callback, as a response, send message --> Hello API!".
+
+
+
+         As your app is running with 'npm start', save it by clicking: Ctrl + S
+         Now if you reload browser (http://localhost:3000), you should see:  Hello API!
+         The application will call a GET method and we will get as a response this
+         'Hello API!' message.
+         
+         
+         
+         
+     ============================================================================== 
+        Environment variables
+       -----------------------
+        They are used as a public variable, which are used among the application.
+        So, for example, we want a public variable for API URL. This API URL will
+        be prefixed for every route which we use for the application or for the API.
+        So as we saw before that, every API we had, it's prefixed with something like:
+        '/api/v1' and this means that every API in our application will have this URL.
+        
+        http://localhost:3000/api/v1/products
+        
+      ===================================================================================
+         
+         Create new file:  .env
+         Type there your enviroment virables:     API_URL = /api/v1
+         But how we can read the variables from this file. In our application there is
+         a library that we can install it from NPM packages. It is called 'dotenv'.
+npm install dotenv
+
+         Edit the app.js file to look like this:
+                  const express = require('express');
+                  const app = express();
+
+                  require('dotenv/config');
+
+                  const api = process.env.API_URL;
+
+                  //  http://localhost:3000/api/v1/products
+                  app.get(api + '/products', (req, res) => {
+                      res.send('Hello API!');
+                  })
+
+                  app.listen(3000, ()=>{
+                      console.log(api);
+                      console.log('server is running  http://localhost:3000')
+                  })
+                  
+
+         This should print:
+                  /api/v1
+                  server is running  http://localhost:3000
+                  
+         And if yo browse to:  http://localhost:3000/api/v1/products  
+         You will see:  Hello API!
+         
+     
+     
+                    
+                  
+=================================================================================       
+=================================================================================     
+=================================================================================
+ 6. Create first API call and parse JSON data : 
+------------------------------------------------   
+                  
+ GET Method:
+==============               
+         Edit the app.js file to look like this:
+                  const express = require('express');
+                  const app = express();
+
+                  require('dotenv/config');
+
+                  const api = process.env.API_URL;
+
+                  app.get(`${api}/products`, (req, res) => {
+                      const product = {
+                          id: 1,
+                          name: 'hair dresser',
+                          image: 'some_url',
+                      }
+                      res.send(product);
+                  })
+
+                  app.listen(3000, ()=>{
+                      console.log(api);
+                      console.log('server is running  http://localhost:3000')
+                  })
+                  
+                  
+         Refresh the app. Open Postman. Select GET method. 
+         Type: http://localhost:3000/api/v1/products
+         Click Send and you should see:         
+                  {
+                     "id": 1,
+                     "name": "hair dresser",
+                     "image": "some_url"
+                  }
+           
+                  
+                  
+  POST Method:
+================
+
+         Add new POST method to post new product into e.g the database. Add next:
+                  app.post(`${api}/products`, (req, res) => {
+                      const newProduct = req.body;
+                      console.log(newProduct);
+                      res.send(newProduct);
+                  })           
+         
+                  
+         Refresh the app. Open Postman. Select POST method. 
+         Type: http://localhost:3000/api/v1/products
+         Click the tap Body. Select 'raw'  and 'Text -> JSON'.
+         Copy-paste the next into the empty filed:         
+                  {
+                     "id": 1,
+                     "name": "hair dresser",
+                     "image": "some_url"
+                  }   
+                  
+          Click Send and you should see:  1
+          If you go to the VSC terminal, you will see: undefined
+          
+          So the problem is that the body is not passed well, so we need something 
+          called a middleware. This is a function that has control of the request 
+          and the response of any API. So when the front end sent JSON object, we
+          need the backend to understand that this is a JSON. 
+          We want to say to it: "Please analyze it and use it in the backend."
+          That could be done by a library called a 'body-parser'. Install it by:
+npm install body-parser
+          
+          In the beginning og the app.js file, add:   
+                  const bodyParser = require('body-parser');
+
+                  // middleware
+                  app.use(bodyParser.json());
+                  
+                  
+           Go back to Postman and run the same POST request.
+           Now you should see:       
+                  {
+                     "id": 1,
+                     "name": "hair dresser",
+                     "image": "some_url"
+                  }   
+                  
+           If you go to the VSC terminal, you will see: 
+                  server is running  http://localhost:3000
+                  { id: 1, name: 'hair dresser', image: 'some_url' }
+                  
+                  
+           
+
+     ============================================================================== 
+        Logging API Requests - Morgan
+       -------------------------------
+        https://www.npmjs.com/package/morgan
+        
+        It's very helpful for the developer to know what is going on on his server
+        so we can know and log the HTTP requests which are coming from the frontend
+        like POST/GET/PUT/DELETE. To do that, there is very good library called Morgan,
+        so we can use it to log our HTTP requests.
+        
+      ===================================================================================
+                  
+         Install 'morgan' library: 
+npm install morgan         
+
+         To app.js file add next:
+                   const morgan = require('morgan');
+                   
+                   // middleware
+                   app.use(morgan('tiny'));
+                   
+                   
+          Now if you go again to Postman and run the same POST request,
+          into the VSC terminal you will see:
+                   server is running  http://localhost:3000
+                   { id: 1, name: 'hair dresser', image: 'some_url' }
+                   POST /api/v1/products 200 49 - 3.269 ms
+
+
+          
+   
+   
+   
+=================================================================================       
+=================================================================================     
+=================================================================================
+ 7. Connect to MongoDB database: 
+---------------------------------
+
+
+     ============================================================================== 
+        Mongoose
+       -----------
+        https://www.npmjs.com/package/mongoose
+        
+        Mongoose is a MongoDB object modeling tool designed to work in an asynchronous
+        environment. Mongoose supports both promises and callbacks.
+        So first we need to install a library called Mongoose.
+        Mongoose is responsible for all operations of MongoDB database in the application
+        or in Node.js application.
+                
+     ==================================================================================      
+       
+      Install 'mongoose' library: 
+npm install mongoose
+
+      To app.js file add next:
+                   const mongoose = require('mongoose');
+                   
+       
+      Normally we add the connection to the database before starting the server.
+      So add next:  
+                  mongoose.connect(process.env.CONNECTION_STRING, {
+                       useNewUrlParser: true,
+                       useUnifiedTopology: true,
+                       dbName: 'obuvkistili'
+                  })
+                  .then(()=>{
+                     console.log('Database Connection is ready...');
+                  })
+                  .catch((err)=> {
+                     console.log(err);
+                  });
+
+      This will establish the connection between the database and the api. 
+      If everything is ok, it will show log massage: 'Database Connection is ready...'.
+      If there is a proble it will log error.
+      
+
+      To .env file add next: CONNECTION_STRING = 
+      
+      
+      
+      Go to MongoDB project. 
+      Open:  DATA STORAGE --> Clusters --> CONNECT --> Connect your application
+      Copy the connection string from step 2. and add it to:
+            mongoose.connect('mongodb+srv://obuvkistili:<password>@cluster0.79rdi.
+            mongodb.net/<dbnane>?retryWrites=true&w=majority');
+      
+      
+      Open:  SECURITY --> Database Access --> ADD NEW DATABASE USER
+      Create new user for the database (it shouldn't be admin).
+      For example:     username --> eshopuser
+                       password --> 1234567
+      
+      
+      Open:  SECURITY --> Network Access --> ADD IP ADDRESS
+      Add the ip address of you laptop.
+      
+                       
+      
+      Create also a database.
+      Open:  DATA STORAGE --> Clusters --> COLLECTIONS --> + Create Database
+      For example:     database name --> eshopdb
+                       collection name --> products
+      
+      
+                  
+      Get the credentials and add them to:      
+            CONNECTION_STRING = mongodb+srv://eshopuser:1234567@cluster0.79rdi.
+            mongodb.net/eshopdb?retryWrites=true&w=majority');
+
+      
+      
+      Now we have SUCCESSFUL connection to the database.
+      
+      
+      
+      
+=================================================================================       
+=================================================================================     
+=================================================================================
+ 8. Read/Write data to the database using APIs: 
+------------------------------------------------
+
+
+      Collection - is the table in a relational database.
+      
+      We have already created database collection --> 'products'.
+      Let's post data to this collection. Go to Postman, as you remember there we
+      have one object. We will push it to our database. But first, in our application
+      we need to create a model with Mongoose. Model is the same thing as a collection.
+      So in MongoDB is called collection and in Node.js is called model. 
+      
+      
+      We need to create a model of product. This model will contain the columns which
+      we need for the product, e.g.  name, image, quantity ...
+      In Mongoose this is called schema: --> https://mongoosejs.com/docs/documents.html
+      
+      
+      Let's create the product model. To app.js file add:
+                  const productSchema = mongoose.Schema({
+                      name: String,
+                      image: String,
+                      countInStock: Number
+                   })
+
+                   const Product = mongoose.model('Product', productSchema);
+      
+       
+       
+      Now we have the product schema and the product model already defined.
+      So Postman is working as our frontend at this moment. It can be Angular 
+      or Vue.js or other frontend app. With POST request to the frontend, the 
+      data should be transported to the backend. Then the backend to save it 
+      into the database.
+
+      To do so, we need first of all, we need to create a new product, for example,
+      of that model. Edit the POST request that we have already created in app.js file:
+                   app.post(`${api}/products`, (req, res) => {
+                       const product = new Product({
+                           name: req.body.name,
+                           image: req.body.image,
+                           countInStock: req.body.countInStock
+                       })
+
+                       product.save().then((createdProduct=>{
+                           res.status(201).json(createdProduct)
+                       })).catch((err)=>{
+                           res.status(500).json({
+                               error: err, 
+                               success: false
+                           })
+                       })
+                   })
+                   
+           Go to Postman and send new POST request. Go to MongoDB --> collection
+           'products' and you will see the new saved product.        
+           Try to create new POST request with body:
+                     {
+                          "id": 1,
+                          "name": "hair dresser",
+                          "image": "some_url",
+                          "countInStock": 500
+                     }
+                     
+                     
+                     
+                     
+                     
+                     
+           Edit the GET request that we have already created in app.js file:
+                    app.get(`${api}/products`, async (req, res) => {
+                        const productList = await Product.find();
+                        
+                        if (!productList) {
+                           res.status(500).json({success: false})
+                        }
+                        res.send(productList);
+                    })
+                    
+           Go to Postman and send new GET request. You will see a list of all 
+           saved products.      
+           
+           
+           
+             
+                               
+                   
