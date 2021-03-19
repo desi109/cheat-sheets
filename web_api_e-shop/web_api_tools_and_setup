@@ -580,6 +580,256 @@ npm install mongoose
            
            
            
-             
-                               
-                   
+           
+           
+           
+=================================================================================       
+=================================================================================     
+=================================================================================
+ 9. Analys and create the e-shop database/schemas and routes: 
+--------------------------------------------------------------
+
+
+           What routes and schemas we need?
+          ----------------------------------
+           
+ +=========================+============================+=========================+
+ |        Products         |           Orders           |          Users          |
+ +=========================+============================+=========================+
+ | id: string              | id: string                 | id: string              |
+ +-------------------------+----------------------------+-------------------------+
+ | name: string            | orderItems: orderItem []   | name: string            |
+ +-------------------------+----------------------------+-------------------------+
+ | description: string     | shippingAddress1: string   | email: string           |
+ +-------------------------+----------------------------+-------------------------+
+ | richDescription: string | shippingAddress2: string   | passwordHash: string    |
+ +-------------------------+----------------------------+-------------------------+
+ | image: string           | city: string               | street: string          |
+ +-------------------------+----------------------------+-------------------------+
+ | images: string []       | zip: string                | apartament: string      |
+ +-------------------------+----------------------------+-------------------------+
+ | brand: string           | country: string            | city: string            |
+ +-------------------------+----------------------------+-------------------------+
+ | price: number           | phone: number              | zip: string             |
+ +-------------------------+----------------------------+-------------------------+
+ | category: Category      | status: string             | country: string         |
+ +-------------------------+----------------------------+-------------------------+
+ | countInStock: number    | totalPrice: number         | phone: number           |
+ +-------------------------+----------------------------+-------------------------+
+ | rating: number          | user: User                 | isAdmin: boolean        |
+ +-------------------------+----------------------------+-------------------------+
+ | isFeatured: boolean     | dateOrdered: Date          |                         |
+ +-------------------------+----------------------------+-------------------------+
+ | dateCreated: Date       |                            |                         |
+ +-------------------------+----------------------------+-------------------------+
+ 
+ 
+ 
+ 
+ +===================+====================+
+ |      Category     |      OrderItems    |   
+ +===================+====================+
+ | id: string        | id: string         |
+ +-------------------+--------------------+
+ | name: string      | product: product   | 
+ +-------------------+--------------------+
+ | color: string     | quantity: number   | 
+ +-------------------+--------------------+
+ | icon: string      |                    |
+ +-------------------+--------------------+
+ | image: string     |                    | 
+ +-------------------+--------------------+
+   
+   
+   
+   
+           If we place all the schemas in this app.js file, it would be very big.
+           So let's put the API routes and the schemas in separated files. 
+           
+           For schemas, create a folder into backend, called 'models'.
+           And inside 'models', we would create a file for every model we have, 
+           for example, for the product schema the fill will be 'product.js'.
+           
+           Copy-Paste next from app.js to the product.js :
+                     const mongoose = require('mongoose');
+                     
+           Cut-Paste next from app.js to the Postmanduct.js :
+                     const productSchema = mongoose.Schema({
+                         name: String,
+                         image: String,
+                         countInStock: {
+                              type: Number,
+                              required: true
+                         }
+                     })
+                     
+                     const Product = mongoose.model('Product', productSchema);
+                      
+           Add next to app.js file :
+                     const {Product} = require('./models/product');
+           
+           
+           
+           
+           Let's do more refactoring. We have many APIs (many GET and POST and ...) .
+           So we will do the same for the routes, as for the schemas.
+           For routes, create a folder into backend, called 'routes'.
+           And inside 'routes', we create also a file called 'products.js'.
+           For every MODEl there may be a ROUTES.
+           
+           
+           In Express, there is something called rorter, and this router is only
+           responsible for creating APIs, storing the APIs and importing and exporting
+           them between the files.
+           Add next to the products.js file (into folder routes) :
+                           const Product = require('../models/product');
+                           const express = require('express');
+                           const router = express.Router();     
+                           
+            Cut-Paste and edit all APIs from app.js to the routes/product.js :    
+    app.get(`${api}/products`, async (req, res...  -->  router.get(`/`, async (req, res...
+         app.post(`${api}/products`, (req, res...  -->  router.post(`/`, (req, res...
+                           
+            Add next to the routes/products.js file :
+                           module.exports = router;
+                           
+            Add next to the app.js file :
+                           const productRouter = require('./routes/products');
+                           app.use(`${api}/products`, productRouter);
+                           
+            Delete next from app.js file :                            
+                           const Product = require('./models/product');
+            
+            
+            
+            Create next files into both folders:
+               models --> category.js
+                          order.js
+                          product.js
+                          user.js
+                          
+               routes --> categories.js
+                          orders.js
+                          products.js
+                          users.js         
+                          
+            Delete next from app.js file: 
+                           const api = process.env.API_URL;
+                           app.use(`${api}/products`, productRouter);   
+                           
+                           
+                           
+            Add next to the app.js file :  
+                           // Routes
+                           const categoriesRoutes = require('./routes/categories');
+                           const productsRoutes = require('./routes/products');
+                           const usersRoutes = require('./routes/users');
+                           const ordersRoutes = require('./routes/orders');
+
+                           const api = process.env.API_URL;
+
+                           app.use(`${api}/categories`, categoriesRoutes);  
+                           app.use(`${api}/products`, productsRoutes); 
+                           app.use(`${api}/users`, usersRoutes);  
+                           app.use(`${api}/orders`, ordersRoutes);  
+
+
+
+
+            For users.js / orders.js / categories.js (into folder 'routes'),
+            add next by edit it for every file:
+                           const {User}= require('../models/user');
+                           const express = require('express');
+                           const router = express.Router();
+
+
+                           router.get(`/`, async (req, res) => {
+                               const userList = await User.find();
+
+                               if (!userList) {
+                                     res.status(500).json({success: false})
+                               }
+                               res.send(userList);
+                           })
+                           
+                           
+                           
+            For user.js / order.js / products.js / category.js (into folder 'models'),
+            add next by edit it for every file:
+                           const mongoose = require('mongoose');
+
+                           const userSchema = mongoose.Schema({
+                               name: String,
+                               image: String,
+                               countInStock: {
+                                   type: Number,
+                                   required: true
+                               }
+                           })
+
+
+                          exports.User = mongoose.model('User', userSchema);
+                           
+                           
+                           
+         Check if the app works correctly. 
+         Refresh the app. Open Postman. Select GET method. 
+         Type: http://localhost:3000/api/v1/products
+         Click the Send button. You will see next output:         
+                  {
+                     "id": 1,
+                     "name": "hair dresser",
+                     "image": "some_url"
+                  }   ....
+                  
+                  
+              
+              
+              
+              
+              
+              
+        Note:  Problem  --> Enabling CORS & Why do we need it?
+       ----------------
+       If you are doing a frontend and the backend development in the same time,
+       you may saw this error:
+
+          Failed to load http://localhost:8080: No 'Access-Control-Allow-Origin'
+          header is present on the requested resource. Origin 'http://localhost:3000'
+          is therefore not allowed access. If an opaque response serves your needs, 
+          set the request's mode to 'no-cors' to fetch the resource with CORS disabled.
+            
+          Uncaughy (in promise) TypeError: Failed to fetch
+          
+          
+       This error called cross-origin-resource-sharing, says that Node.js can't trust
+       any other application. So when we are sending requests from my frontend to the
+       backend, then the backend will not respond to us the same, that we want because
+       it's forbidden. It's using different board (https://localhost:8080), which is
+       totally a different domain from what we want (http://localhost://3000).
+       So in the frontend application, when we create a services to call the APIs,
+       then we would get that error.
+       In Mozilla.org (https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS), they
+       explain all the details about this cause. So in Node.js app we need to enable
+       those CORS. 
+       
+       How we can allow any application to request API from our server.?
+       There is a library called CORS that we can use to allow the CORS for any
+       application. So install it:
+npm install cors
+
+       After installing it, we need to require and import it. 
+       Add next to app.js file :
+                    const cors = require('cors');
+                    
+                    app.use(cors());
+                    app.options('*', cors());
+
+
+       See also this: https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/OPTIONS
+       
+       
+       
+       
+ 
+                  
