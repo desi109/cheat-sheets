@@ -1,0 +1,539 @@
+ Web API (E-Commerce) - Backend and Frontend    (Part 3)
+ --------------------------------------------------------
+ 
+ 
+   Main Steps:
+  ------------
+  - Create the Products and Category Schemas in database (in the application layer).
+  - Make the REST API for the Categories.
+  - Post a New Product to the database through the REST API.
+  - Get List of Products REST API.
+  - Get a Product REST API (details) by ID.
+  - Population of Category in Get a Product API. 
+    How to connect the Products with Category?
+  - Update a Product REST API.
+  - Delete a Product REST API.
+  - Get Products Count for Statistics Purposes.
+  - Filtering.
+  
+
+  
+=================================================================================       
+=================================================================================     
+=================================================================================
+ 1.  Products/Categories  Model & Schema:    
+------------------------------------------
+
+       Now we will see how to build the product model or the product schema. 
+       Everything in Mongoose start with a schema. Each schema maps to a MongoDB
+       collection and defines the shape of the document within that collection.
+       So based on the model, which we create in '1_web_api_tools_and_setup' step
+       '9. Analys and create the e-shop database/schemas and routes'.
+       We are going to build the same schema as we build it before in that model.
+
+       See also: https://mongoosejs.com/docs/schematypes.html
+                 https://mongoosejs.com/docs/schematypes.html#schematype-options
+       
+       So into 'models/products.js' we add next :
+const productSchema = mongoose.Schema({
+    name: {
+        type: String,
+        required: true         
+    },
+    description: {
+        type: String,
+        required: true
+    },
+    richDescription: {
+        type: String,
+        default: ''
+    },
+    image: {
+        type: String,
+        default: ''
+    },
+    images: [{
+        type: String
+    }],
+    brand: {
+        type: String,
+        default: ''
+    },
+    price: {
+        type: Number,
+        default: 0
+    },
+    category: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category',
+        required: true
+    },
+    countInStock: {
+        type: Number,
+        required: true,
+        min: 0,
+        max: 255
+    },
+    rating: {
+        type: Number,
+        default: 0
+    },
+    numReviews: {
+        type: Number,
+        default: 0
+    },
+    isFeatured: {
+        type: Boolean,
+        default: false
+    },
+    dateCreated: {
+        type: Date,
+        default: Date.now
+    },
+})
+                      
+
+
+
+       So into 'models/category.js' we add next :
+const categorySchema = mongoose.Schema({
+    name: {
+        type: String,
+        required: true         
+    },
+    icon: {
+        type: String
+    },
+    color: { // 
+        type: String      
+    }
+})
+
+
+
+
+=================================================================================       
+=================================================================================     
+=================================================================================
+ 2. Add and Delete Categories : 
+--------------------------------
+
+        First we will create Add API. 
+        Go into 'routes/categories.js' and add next :
+router.post(`/`, async (req, res)=>{
+    let category = new Category({
+        name: req.body.name,
+        icon: req.body.icon,
+        color: req.body.color
+    })
+
+    category = await category.save();
+
+    if (!category) {
+        return res.status(404).send('The category cannot be created!')
+    }
+    res.send(category);
+})
+
+
+
+        So we created a new category model and then we filled it with data. 
+        We saved it using Mongoose and then we were waiting until this category 
+        is ready. Finally, we check if there is a category. If there is data inside
+        this category, then we send it. But if not, we are returning an error.
+      
+        Refresh the app. Open Postman. Select POST method. 
+        Type: http://localhost:3000/api/v1/categories
+        Click the tap Body. Select 'raw'  and 'Text -> JSON'.
+        Copy-paste the next into the empty filed:         
+                  {
+                     "name": "health",
+                     "icon": "icon-health",
+                     "color": "#040404"
+                  }   
+        
+        To check if it's really working. We go again to Atlas MongoDB and check
+        it in the database. So create more categories.
+        
+        
+        Now we will create Delete API. 
+        Go into 'routes/categories.js' and add next :
+router.delete(`/:id`, (req, res)=>{
+    Category.findByIdAndRemove(req.params.id).then(category =>{
+        if (category) {
+            return res.status(200).json({success: true, message: 'The category is deleted!'})
+        } else {
+            return res.status(404).json({success: false, message: 'Category not found!'})
+        }
+    }).catch(err=>{
+        return res.status(400).json({success: false, error: err})
+    })
+})
+        
+        
+        
+        
+        
+        Refresh the app. Open Postman. Create new category with POST method.
+        Get its 'id' (e.g. 6055ab5b82183e1ff173ca96).
+        Select DELETE method. 
+        Type: http://localhost:3000/api/v1/categories/6055ab5b82183e1ff173ca96
+        Copy-paste the next into the empty filed:         
+                  {
+                     "name": "health",
+                     "icon": "icon-health",
+                     "color": "#040404"
+                  }         
+        If everything is ok you should see:
+                  {
+                     "success": true,
+                     "message": "The category is deleted!"
+                  }
+        
+        
+        
+        
+        
+        If you run GET method.
+        Type: http://localhost:3000/api/v1/categories/
+        You will see all created Categories.
+        
+        
+        
+        
+        
+        Get one category 'id' (e.g. 6055ab5b82183e1ff173ca96). 
+        But change the last number (e.g. 6055ab5b82183e1ff173ca90).
+        Select DELETE method. 
+        Type: http://localhost:3000/api/v1/categories/6055ab5b82183e1ff173ca90
+        If everything is ok you should see:
+                  {
+                     "success": false,
+                     "message": "Category not found!"
+                  })
+                  
+                  
+                  
+                  
+        
+=================================================================================       
+=================================================================================     
+=================================================================================
+ 3. Get list of Categories and Category details : 
+--------------------------------------------------
+
+       Go to 'routes/categories.js' and edit next:
+          res.send(categoryList);  --> res.status(200).send(categoryList);
+          
+       Also add GET method by 'id':
+router.get(`/:id`, async (req, res) => {
+    const category = await Category.findById(req.params.id);
+
+    if (!category) {
+        res.status(500).json({ message: 'The category with the given ID was not found.' });
+    }
+    res.status(200).send(category);
+})   
+       
+       
+       Refresh the app. Open Postman. Create new category with POST method.
+       Get its 'id' (e.g. 6055ab5b82183e1ff173ca91).
+       Select GET method. 
+       Type: http://localhost:3000/api/v1/categories/6055ab5b82183e1ff173ca91        
+       If everything is ok you should see:
+                 {
+                    "_id": "6055ab5b82183e1ff173ca91 ",
+                    "name": "computers",
+                    "icon": "icon-computers",
+                    "color": "#0555",
+                    "__v": 0
+                 }
+       
+       
+       
+       
+       
+=================================================================================       
+=================================================================================     
+=================================================================================
+ 4. Update Category : 
+----------------------
+
+       Go to 'routes/categories.js' and add PUT method: 
+router.put(`/:id`, async (req, res) => {
+    const category = await Category.findByIdAndUpdate(
+        req.params.id, 
+        {
+            name: req.body.name,
+            icon: req.body.icon,
+            color: req.body.color,
+        },
+        {new: true}
+    )
+
+        if (!category) {
+            return res.status(404).send('The category cannot be created!');
+        }
+        res.send(category);
+})
+
+
+       Test it with Postman.
+       
+      
+      
+      
+       
+=================================================================================       
+=================================================================================     
+=================================================================================
+ 5. POST and GET and DELETE to a Product REST API: 
+---------------------------------------------------
+
+       Go to 'routes/products.js' and add/edit next: 
+const { Product } = require('../models/product');
+const { Category } = require('../models/category');
+const express = require('express');
+const router = express.Router();
+const mongoose = require('mongoose');
+
+
+// GET list of all products
+// http://localhost:3000/api/v1/products/
+router.get(`/`, async (req, res) =>{
+    // localhost:3000/api/v1/products?categories=2342342,234234
+    let filter = {};
+    if(req.query.categories)
+    {
+         filter = {category: req.query.categories.split(',')}
+    }
+
+    const productList = await Product.find(filter).populate('category');
+
+    if(!productList) {
+        res.status(500).json({success: false})
+    } 
+    res.send(productList);
+})
+
+
+// GET one product by ID
+// http://localhost:3000/api/v1/products/6055a6a8eafaa314670475cf
+router.get(`/:id`, async (req, res) =>{
+    const product = await Product.findById(req.params.id).populate('category');
+
+    if(!product) {
+        res.status(500).json({success: false})
+    } 
+    res.send(product);
+})
+
+
+// POST (add) one product
+// http://localhost:3000/api/v1/products/
+// + Body (with the new product info)
+router.post(`/`, async (req, res) => {
+    const category = await Category.findById(req.body.category);
+    if(!category) return res.status(400).send('Invalid Category!')
+
+    let product = new Product({
+        name: req.body.name,
+        description: req.body.description,
+        richDescription: req.body.richDescription,
+        image: req.body.image,
+        brand: req.body.brand,
+        price: req.body.price,
+        category: req.body.category,
+        countInStock: req.body.countInStock,
+        rating: req.body.rating,
+        numReviews: req.body.numReviews,
+        isFeatured: req.body.isFeatured
+    })
+
+    product = await product.save;
+    
+    if(!product){
+        return res.status(500).send('The product cannot be created!');
+    }
+
+    res.send(product);
+})
+
+
+// PUT (update) one product by ID
+// http://localhost:3000/api/v1/products/6055a6a8eafaa314670475cf
+// + Body (with updated info)
+router.put('/:id',async (req, res)=> {
+    if(!mongoose.isValidObjectId(req.params.id)) {
+       return res.status(400).send('Invalid Product Id')
+    }
+    const category = await Category.findById(req.body.category);
+    if(!category) return res.status(400).send('Invalid Category')
+
+    const product = await Product.findByIdAndUpdate(
+        req.params.id,
+        {
+            name: req.body.name,
+            description: req.body.description,
+            richDescription: req.body.richDescription,
+            image: req.body.image,
+            brand: req.body.brand,
+            price: req.body.price,
+            category: req.body.category,
+            countInStock: req.body.countInStock,
+            rating: req.body.rating,
+            numReviews: req.body.numReviews,
+            isFeatured: req.body.isFeatured,
+        },
+        { new: true}
+    )
+
+    if(!product)
+    return res.status(500).send('The product cannot be updated!')
+
+    res.send(product);
+})
+
+
+// DELETE one product by ID
+// http://localhost:3000/api/v1/products/6055a6a8eafaa314670475cf
+router.delete('/:id', (req, res)=>{
+    Product.findByIdAndRemove(req.params.id).then(product =>{
+        if(product) {
+            return res.status(200).json({success: true, message: 'The product is deleted!'})
+        } else {
+            return res.status(404).json({success: false , message: 'Product not found!'})
+        }
+    }).catch(err=>{
+       return res.status(500).json({success: false, error: err}) 
+    })
+})
+
+
+// GET 
+// http://localhost:3000/api/v1/products/get/count
+router.get(`/get/count`, async (req, res) =>{
+    const productCount = await Product.countDocuments((count) => count)
+
+    if(!productCount) {
+        res.status(500).json({success: false})
+    } 
+    res.send({
+        productCount: productCount
+    });
+})
+
+
+// GET 
+// http://localhost:3000/api/v1/products/get/featured/:count
+router.get(`/get/featured/:count`, async (req, res) =>{
+    const count = req.params.count ? req.params.count : 0
+    const products = await Product.find({isFeatured: true}).limit(+count);
+
+    if(!products) {
+        res.status(500).json({success: false})
+    } 
+    res.send(products);
+})
+
+
+module.exports = router;
+
+
+
+      
+      
+      
+      
+       Add next to 'models/category.js':
+categorySchema.virtual('id').get(function () {
+    return this._id.toHexString();
+});
+
+categorySchema.set('toJSON', {
+    virtuals: true,
+});
+
+
+
+
+       Add next to 'models/product.js':
+productSchema.virtual('id').get(function () {
+    return this._id.toHexString();
+});
+
+productSchema.set('toJSON', {
+    virtuals: true,
+});
+       Test it with Postman.
+       
+
+
+       Add next to 'models/user.js':
+const userSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
+    },
+    email: {
+        type: String,
+        required: true,
+    },
+    passwordHash: {
+        type: String,
+        required: true,
+    },
+    phone: {
+        type: String,
+        required: true,
+    },
+    isAdmin: {
+        type: Boolean,
+        default: false,
+    },
+    street: {
+        type: String,
+        default: ''
+    },
+    apartment: {
+        type: String,
+        default: ''
+    },
+    zip :{
+        type: String,
+        default: ''
+    },
+    city: {
+        type: String,
+        default: ''
+    },
+    country: {
+        type: String,
+        default: ''
+    }
+
+});
+
+userSchema.virtual('id').get(function () {
+    return this._id.toHexString();
+});
+
+userSchema.set('toJSON', {
+    virtuals: true,
+});
+
+exports.User = mongoose.model('User', userSchema);
+       
+       
+       
+       
+       
+       
+       Test all with Postman. 
+       See file 3_web_api_postman_tests.
+       
+       
+       
+    
+
+       T

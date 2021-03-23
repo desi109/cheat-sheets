@@ -1,0 +1,216 @@
+ Web API (E-Commerce) - Postman Tests 
+ -------------------------------------
+ 
+ 
+=====================================================================================
+=====================================================================================
+===================================================================================== 
+   1. For Categories:
+----------------------
+
+ * GET list of all categories:
+--------------------------------------------------------
+   - GET method
+   - http://localhost:3000/api/v1/categories
+ 
+ 
+ 
+ * GET one category by ID:
+--------------------------------------------------------
+   - GET method
+   - http://localhost:3000/api/v1/products/6055a6a8eafaa314670475cf
+   
+   
+ 
+ * POST (add) one category:
+----------------------------
+   - POST method
+   - http://localhost:3000/api/v1/categories
+   - Body (with the new product info)
+   
+{
+    "name": "boots",
+    "icon": "icon-boots",
+    "color": "#0277"
+}  
+
+{
+    "name": "ankle boots",
+    "icon": "icon-ankle-boots",
+    "color": "#7777"
+}  
+
+{
+    "name": "trainers",
+    "icon": "icon-trainers",
+    "color": "#0277"
+}
+
+{
+    "name": "sandals",
+    "icon": "icon-sandals",
+    "color": "#33447"
+}  
+  
+
+
+
+ * PUT (update) one category by ID:
+------------------------------------
+   - PUT method
+   - http://localhost:3000/api/v1/categories/6055a6a8eafaa314670475cf
+   - Body (with updated info)
+   
+{
+    "name": "trainers",
+    "icon": "icon-trainers",
+    "color": "#5555"
+} 
+
+
+
+ * DELETE one category by ID:
+-------------------------------
+   - DELETE method
+   - http://localhost:3000/api/v1/categories/6055a6a8eafaa314670475cf
+  
+
+
+===================================================================================== 
+===================================================================================== 
+=====================================================================================
+  2. For Products:
+--------------------
+
+
+ * GET list of all products:
+-----------------------------
+   - GET method
+   - http://localhost:3000/api/v1/products
+   
+   
+
+ * GET list of all products from one or more categories:
+ --------------------------------------------------------
+   - GET method
+   - http://localhost:3000/api/v1/products?categories=6055a6a8eafaa314670475cf
+   OR
+   - http://localhost:3000/api/v1/
+     products?categories=6055a6a8eafaa314670475cf,60583441e1a3fe80e66fc176
+   
+   
+   
+ * GET one product by ID:
+ --------------------------------------------------------
+   - GET method
+   - http://localhost:3000/api/v1/products/605855d09d38f1a5864b5353
+   
+ 
+ 
+ * POST (add) one product:
+---------------------------
+   - POST method
+   - http://localhost:3000/api/v1/products
+   - Body (with the new product info)
+   
+{
+    "name": "Product 1 (boots)",
+    "description": "Product 1 description.",
+    "richDescription": "Product 1 richDescription.",
+    "image": "roduct1/image.jpg",
+    "brand": "Product 1 Brand",
+    "price": 80,
+    "category": "6055a6a8eafaa314670475cf",
+    "countInStock": 10,
+    "rating": 4,
+    "numReviews": 22,
+    "isFeatured": true
+}
+
+{
+    "name": "Product 2 (ankle boots)",
+    "description": "Product 2 description.",
+    "richDescription": "Product 2 richDescription.",
+    "image": "roduct2/image.jpg",
+    "brand": "Product 2 Brand",
+    "price": 60,
+    "category": "6055a7cbeafaa314670475d0",
+    "countInStock": 10,
+    "rating": 4,
+    "numReviews": 22,
+    "isFeatured": false
+}
+
+{
+    "name": "Product 3 (trainers)",
+    "description": "Product 3 description.",
+    "richDescription": "Product 3 richDescription.",
+    "image": "roduct3/image.jpg",
+    "brand": "Product 3 Brand",
+    "price": 10,
+    "category": "60583441e1a3fe80e66fc176",
+    "countInStock": 10,
+    "rating": 4,
+    "numReviews": 22,
+    "isFeatured": false
+}
+
+{
+    "name": "Product 4 (sandals)",
+    "description": "Product 4 description.",
+    "richDescription": "Product 4 richDescription.",
+    "image": "roduct4/image.jpg",
+    "brand": "Product 4 Brand",
+    "price": 35,
+    "category": "605978529d38f1a5864b5356",
+    "countInStock": 10,
+    "rating": 4,
+    "numReviews": 22,
+    "isFeatured": true
+}
+   
+  
+  
+  
+ * PUT (update) one product by ID:
+------------------------------------
+   - PUT method
+   - http://localhost:3000/api/v1/products/605855f99d38f1a5864b5355
+   - Body (with updated info) 
+   
+{
+    "name": "Product 3 (trainers)",
+    "description": "Product 3 description.",
+    "richDescription": "Product 3 richDescription.",
+    "image": "roduct3/image.jpg",
+    "brand": "Product 3 Brand",
+    "price": 40,
+    "category": "60583441e1a3fe80e66fc176",
+    "countInStock": 10,
+    "rating": 4,
+    "numReviews": 22,
+    "isFeatured": true
+}
+
+
+
+ * DELETE one product by ID:
+-------------------------------
+   - DELETE method
+   - http://localhost:3000/api/v1/categories/605855f99d38f1a5864b5355
+   
+   
+
+ * GET number of all products :
+---------------------------------
+   - GET method
+   - http://localhost:3000/api/v1/products/get/count
+   
+   
+   
+ * GET some number of  featured products :
+-------------------------------------------
+   - GET method
+   - http://localhost:3000/api/v1/products/get/featured/:count
+   
+   
