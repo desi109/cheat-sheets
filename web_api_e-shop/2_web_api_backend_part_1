@@ -1,7 +1,8 @@
- Web API (E-Commerce) - Backend and Frontend    (Part 3)
+ Web API (E-Commerce) - Backend and Frontend    (Part 1)
  --------------------------------------------------------
  
- 
+Products/Categories  Model and API
+
    Main Steps:
   ------------
   - Create the Products and Category Schemas in database (in the application layer).
@@ -34,7 +35,7 @@
        See also: https://mongoosejs.com/docs/schematypes.html
                  https://mongoosejs.com/docs/schematypes.html#schematype-options
        
-       So into 'models/products.js' we add next :
+       So into 'models/product.js' we add next :
 const productSchema = mongoose.Schema({
     name: {
         type: String,
@@ -533,7 +534,3 @@ exports.User = mongoose.model('User', userSchema);
        See file 3_web_api_postman_tests.
        
        
-       
-    
-
-       T

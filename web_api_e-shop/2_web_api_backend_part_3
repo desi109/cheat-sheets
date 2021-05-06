@@ -1,0 +1,308 @@
+Web API (E-Commerce) - Backend and Frontend    (Part 3)
+ --------------------------------------------------------
+ 
+Orders  Model and API
+ 
+   Main Steps:
+  ------------
+  - Build the orders
+  - The user is going to have filled his card and then he is going to check out to submit an order
+  - The order will come with the address of the person and also the shipping options and 
+    how the user will pay for the order
+  - Also after the user get logged in --> data of the user will fill in the order data automatically
+  - Link the product with the order (the order will contain many products)
+  - Change the state of the order ( to be e.g. delivered / shipped / canceled)
+
+  
+=================================================================================       
+=================================================================================     
+=================================================================================
+ 1. Orders Model & Schema :    
+---------------------------
+
+       Add into 'models/order.js':
+const mongoose = require('mongoose');
+
+const orderSchema = mongoose.Schema({
+    orderItems: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'OrderItem',
+        required:true
+    }],
+    shippingAddress1: {
+        type: String,
+        required: true,
+    },
+    shippingAddress2: {
+        type: String,
+    },
+    city: {
+        type: String,
+        required: true,
+    },
+    zip: {
+        type: String,
+        required: true,
+    },
+    country: {
+        type: String,
+        required: true,
+    },
+    phone: {
+        type: String,
+        required: true,
+    },
+    status: {
+        type: String,
+        required: true,
+        default: 'Pending',
+    },
+    totalPrice: {
+        type: Number,
+    },
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+    },
+    dateOrdered: {
+        type: Date,
+        default: Date.now,
+    },
+})
+
+orderSchema.virtual('id').get(function () {
+    return this._id.toHexString();
+});
+
+orderSchema.set('toJSON', {
+    virtuals: true,
+});
+
+exports.Order = mongoose.model('Order', orderSchema);
+
+
+
+/**
+Order Example:
+
+{
+    "orderItems" : [
+        {
+            "quantity": 3,
+            "product" : "6055a6a8eafaa314670475cf"
+        },
+        {
+            "quantity": 2,
+            "product" : "6055a6a8eafaa314670475ss"
+        }
+    ],
+    "shippingAddress1" : "ul. Vitinq 23",
+    "shippingAddress2" : "apt. 11",
+    "city": "Plovdiv",
+    "zip": "4000",
+    "country": "Bulgaria",
+    "phone": "0895864306",
+    "user": "5fd51bc7e39ba856244a3b44"
+}
+
+ */
+ 
+ 
+  
+
+       Add new file 'models/order-item.js':
+const mongoose = require('mongoose');
+
+const orderItemSchema = mongoose.Schema({
+    quantity: {
+        type: Number,
+        required: true
+    },
+    product: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product'
+    }
+})
+
+exports.OrderItem = mongoose.model('OrderItem', orderItemSchema);
+
+
+
+
+=================================================================================       
+=================================================================================     
+=================================================================================
+ 2. Orders API :    
+----------------
+
+       Add next to  'routes/orders.js':
+const {Order} = require('../models/order');
+const express = require('express');
+const {OrderItem} = require('../models/order-item');
+const router = express.Router();
+
+
+// GET order of a user from exact date
+// http://localhost:3000/api/v1/orders
+router.get(`/`, async (req, res) =>{
+    const orderList = await Order.find().populate('user', 'name').sort({'dateOrdered': -1});
+
+    if(!orderList) {
+        res.status(500).json({success: false})
+    } 
+    res.send(orderList);
+})
+
+
+// GET order by ID
+// http://localhost:3000/api/v1/orders/6055a6a8eafaa314670475cf
+router.get(`/:id`, async (req, res) =>{
+    const order = await Order.findById(req.params.id)
+    .populate('user', 'name')
+    .populate({ 
+        path: 'orderItems', populate: {
+            path : 'product', populate: 'category'} 
+        });
+
+    if(!order) {
+        res.status(500).json({success: false})
+    } 
+    res.send(order);
+})
+
+
+// POST (create) a new order 
+// http://localhost:3000/api/v1/orders
+router.post('/', async (req,res)=>{
+    const orderItemsIds = Promise.all(req.body.orderItems.map(async (orderItem) =>{
+        let newOrderItem = new OrderItem({
+            quantity: orderItem.quantity,
+            product: orderItem.product
+        })
+
+        newOrderItem = await newOrderItem.save();
+
+        return newOrderItem._id;
+    }))
+    const orderItemsIdsResolved =  await orderItemsIds;
+
+    const totalPrices = await Promise.all(orderItemsIdsResolved.map(async (orderItemId)=>{
+        const orderItem = await OrderItem.findById(orderItemId).populate('product', 'price');
+        const totalPrice = orderItem.product.price * orderItem.quantity;
+        return totalPrice
+    }))
+
+    const totalPrice = totalPrices.reduce((a,b) => a +b , 0);
+
+    let order = new Order({
+        orderItems: orderItemsIdsResolved,
+        shippingAddress1: req.body.shippingAddress1,
+        shippingAddress2: req.body.shippingAddress2,
+        city: req.body.city,
+        zip: req.body.zip,
+        country: req.body.country,
+        phone: req.body.phone,
+        status: req.body.status,
+        totalPrice: totalPrice,
+        user: req.body.user,
+    })
+    order = await order.save();
+
+    if(!order)
+    return res.status(400).send('The order cannot be created!')
+
+    res.send(order);
+})
+
+
+// POST (edit/update) the order
+// http://localhost:3000/api/v1/orders/6055a6a8eafaa314670475cf
+router.put('/:id',async (req, res)=> {
+    const order = await Order.findByIdAndUpdate(
+        req.params.id,
+        {
+            status: req.body.status
+        },
+        { new: true}
+    )
+
+    if(!order)
+    return res.status(400).send('The order cannot be update!')
+
+    res.send(order);
+})
+
+
+// DELETE order by ID
+// http://localhost:3000/api/v1/orders/6055a6a8eafaa314670475cf
+router.delete('/:id', (req, res)=>{
+    Order.findByIdAndRemove(req.params.id).then(async order =>{
+        if(order) {
+            await order.orderItems.map(async orderItem => {
+                await OrderItem.findByIdAndRemove(orderItem)
+            })
+            return res.status(200).json({success: true, message: 'The order is deleted!'})
+        } else {
+            return res.status(404).json({success: false , message: 'The order was not found!'})
+        }
+    }).catch(err=>{
+       return res.status(500).json({success: false, error: err}) 
+    })
+})
+
+
+// GET price of all orders (total sales price)
+// http://localhost:3000/api/v1/orders/get/totalsales
+router.get('/get/totalsales', async (req, res)=> {
+    const totalSales= await Order.aggregate([
+        { $group: { _id: null , totalsales : { $sum : '$totalPrice'}}}
+    ])
+
+    if(!totalSales) {
+        return res.status(400).send('The total sales price cannot be generated!')
+    }
+
+    res.send({totalsales: totalSales.pop().totalsales})
+})
+
+
+// GET number of all orders
+// http://localhost:3000/api/v1/orders/get/count
+router.get(`/get/count`, async (req, res) =>{
+    const orderCount = await Order.countDocuments((count) => count)
+
+    if(!orderCount) {
+        res.status(500).json({success: false})
+    } 
+    res.send({
+        orderCount: orderCount
+    });
+})
+
+
+// GET number of all orders of a user
+// http://localhost:3000/api/v1/orders/get/userorders/6055a6a8eafaa314670475cf
+router.get(`/get/userorders/:userid`, async (req, res) =>{
+    const userOrderList = await Order.find({user: req.params.userid}).populate({ 
+        path: 'orderItems', populate: {
+            path : 'product', populate: 'category'} 
+        }).sort({'dateOrdered': -1});
+
+    if(!userOrderList) {
+        res.status(500).json({success: false})
+    } 
+    res.send(userOrderList);
+})
+
+
+
+module.exports = router;
+
+
+
+
+       Test all with Postman. 
+       See file 3_web_api_postman_tests.
+       
+       
+       

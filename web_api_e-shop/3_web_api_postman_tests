@@ -9,21 +9,21 @@
 ----------------------
 
  * GET list of all categories:
---------------------------------------------------------
+------------------------------
    - GET method
    - http://localhost:3000/api/v1/categories
  
  
  
  * GET one category by ID:
---------------------------------------------------------
+--------------------------
    - GET method
    - http://localhost:3000/api/v1/products/6055a6a8eafaa314670475cf
    
    
  
  * POST (add) one category:
-----------------------------
+---------------------------
    - POST method
    - http://localhost:3000/api/v1/categories
    - Body (with the new product info)
@@ -56,7 +56,7 @@
 
 
  * PUT (update) one category by ID:
-------------------------------------
+-----------------------------------
    - PUT method
    - http://localhost:3000/api/v1/categories/6055a6a8eafaa314670475cf
    - Body (with updated info)
@@ -70,7 +70,7 @@
 
 
  * DELETE one category by ID:
--------------------------------
+-----------------------------
    - DELETE method
    - http://localhost:3000/api/v1/categories/6055a6a8eafaa314670475cf
   
@@ -84,14 +84,14 @@
 
 
  * GET list of all products:
------------------------------
+----------------------------
    - GET method
    - http://localhost:3000/api/v1/products
    
    
 
  * GET list of all products from one or more categories:
- --------------------------------------------------------
+ -------------------------------------------------------
    - GET method
    - http://localhost:3000/api/v1/products?categories=6055a6a8eafaa314670475cf
    OR
@@ -101,7 +101,7 @@
    
    
  * GET one product by ID:
- --------------------------------------------------------
+ ------------------------
    - GET method
    - http://localhost:3000/api/v1/products/605855d09d38f1a5864b5353
    
@@ -202,15 +202,334 @@
    
 
  * GET number of all products :
----------------------------------
+-------------------------------
    - GET method
    - http://localhost:3000/api/v1/products/get/count
    
    
    
  * GET some number of  featured products :
--------------------------------------------
+------------------------------------------
    - GET method
    - http://localhost:3000/api/v1/products/get/featured/:count
+
+
+
+===================================================================================== 
+===================================================================================== 
+=====================================================================================
+  3. For Users:
+--------------------
+
+
+ * GET list of all users:
+-------------------------
+   - GET method
+   - http://localhost:3000/api/v1/users
+   - Ivan (admin) Token
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MDkzN2RjZjRiZDg2M2Y1M2ZiYTg4OGUiLCJpc0FkbWluIjp0cnVlLCJpYXQiOjE2MjAyNzkwMDksImV4cCI6MTYyMDM2NTQwOX0.zB3WGkm0QtL2Fg9FEPYW3OT6QCZ0r9p5VJL8iSeTetE
+
+https://jwt.io/  --> for the Token
+https://www.epochconverter.com/  --> for the time
+{
+  "alg": "HS256",
+  "typ": "JWT"
+}
+{
+  "userId": "60937ae24bd863f53fba888c",
+  "isAdmin": false,
+  "iat": 1620278468,
+  "exp": 1620364868
+}
+
+HMACSHA256(
+  base64UrlEncode(header) + "." +
+  base64UrlEncode(payload),
+  
+my-dog-is-nice
+
+) secret base64 encoded
+
+
+  
+  
+
+ * GET one user by ID:
+----------------------
+   - GET method
+   - http://localhost:3000/api/v1/users/6055a6a8eafaa314670475cf
+   
+   
+      
+ * POST (registration) of a new user:
+-------------------------------------
+   - POST method
+   - http://localhost:3000/api/v1/users/registration
+   - Body (with the new user info)  
+   
+{
+    "name": "Ivan Ivanov",
+    "email": "ivan.ivanov@gmail.com",
+    "passwordHash": "123456",
+    "phone": "0882883765",
+    "isAdmin": true,
+    "street": "ul. Prohodna 74",
+    "apartament": "apt. 20",
+    "zip": "1000",
+    "city": "Sofia",
+    "country": "Bulgaria"
+}
+
+
+   - POST method
+   - http://localhost:3000/api/v1/users/registration
+   - Body (with the new user info)
+   
+{
+    "name": "Marina Marinova",    
+    "email":"marina.marinova@gmail.com",
+    "passwordHash":"123456",
+    "phone":"0895864306",
+    "isAdmin":false,
+    "street":"ul. Vitinq 23",
+    "apartament":"apt. 11",
+    "zip":"4000",
+    "city":"Plovdiv",
+    "country":"Bulgaria"
+}
+
+{
+    "name": "Petur Petrov",    
+    "email":"petur.petrov@gmail.com",
+    "passwordHash":"123456",
+    "phone":"0883309301",
+    "isAdmin":false,
+    "street":"ul. Krasna 11",
+    "apartament":"apt. 56",
+    "zip":"1000",
+    "city":"Sofia",
+    "country":"Bulgaria"
+}
+
+
+
+
+ * POST (login) of an existing user:
+------------------------------------
+   - POST method
+   - http://localhost:3000/api/v1/users/login
+   - Body (with the user credentials)
+   
+{   
+    "email":"marina.marinova@gmail.com",
+    "passwordHash":"123456"
+}
+   - You will get Token !!!
+
+
+
+ * PUT (update) user by ID:
+---------------------------
+   - PUT method
+   - http://localhost:3000/api/v1/users/605855f99d38f1a5864b5355
+   - Body (with updated info) 
+{
+    "name": "Petur Petrov",    
+    "email":"petur.petrov@gmail.com",
+    "passwordHash":"123456",
+    "phone":"0883309301",
+    "isAdmin":false,
+    "street":"ul. Perovska 15",
+    "apartament":"apt. 7",
+    "zip":"1000",
+    "city":"Sofia",
+    "country":"Bulgaria"
+}
+
+
+
+ * DELETE user by ID:
+---------------------
+   - DELETE method
+   - http://localhost:3000/api/v1/users/605855f99d38f1a5864b5355
+   
+
+
+ * GET number of all users :
+----------------------------
+   - GET method
+   - http://localhost:3000/api/v1/users/get/count
+
+
+
+=====================================================================================
+=====================================================================================
+===================================================================================== 
+  4. For Orders:
+--------------------
+
+ * GET order of a user from exact date:
+---------------------------------------
+   - GET method
+   - Ivan (admin) Token !!!
+   - http://localhost:3000/api/v1/orders
+   
+   
+ 
+ * GET order by ID:
+-------------------
+   - GET method
+   - Ivan (admin) Token !!!
+   - http://localhost:3000/api/v1/orders/6055a6a8eafaa314670475cf
+
+
+
+ * POST (create) a new order:
+-----------------------------
+   - POST method
+   - Ivan (admin) Token !!!
+   - http://localhost:3000/api/v1/orders
+   - Body (with the order info)  
+{
+    "orderItems":[
+        {
+            "quantity":2,
+            "product":"605855d09d38f1a5864b5353"
+        },
+        {
+            "quantity":1,
+            "product":"605855eb9d38f1a5864b5354"
+        }
+    ],
+    "shippingAddress1":"ul. Vitinq 23",
+    "shippingAddress2":"apt. 11",
+    "city":"Plovdiv",
+    "zip":"4000",
+    "country":"Bulgaria",
+    "phone":"0895864306",
+    "user": "60937e224bd863f53fba888f"
+}        
+
+
+
+ * POST (edit/update) the order (by ID):
+----------------------------------------
+   - POST method
+   - Ivan (admin) Token !!!
+   - http://localhost:3000/api/v1/orders/6055a6a8eafaa314670475cf
+   - Body (with the order info) 
+{
+    "orderItems":[
+        {
+            "quantity":3,
+            "product":"605855d09d38f1a5864b5353"
+        },
+        {
+            "quantity":3,
+            "product":"605855eb9d38f1a5864b5354"
+        }
+    ],
+    "shippingAddress1":"ul. Vitinq 23",
+    "shippingAddress2":"apt. 11",
+    "city":"Plovdiv",
+    "zip":"4000",
+    "country":"Bulgaria",
+    "phone":"0895864306",
+    "user": "60937e224bd863f53fba888f"
+} 
+   
+
+
+ * DELETE order by ID:
+----------------------
+   - DELETE method
+   - Ivan (admin) Token !!!
+   - http://localhost:3000/api/v1/orders/6055a6a8eafaa314670475cf
+
+
+
+ * GET price of all orders (total sales price):
+-----------------------------------------------
+   - GET method
+   - Ivan (admin) Token !!!
+   - http://localhost:3000/api/v1/orders/get/totalsales   
+
+
+
+ * GET number of all orders:
+----------------------------
+   - GET method
+   - Ivan (admin) Token !!!
+   - http://localhost:3000/api/v1/orders/get/count
+
+
+
+ * GET number of all orders of a user:
+--------------------------------------
+   - GET method
+   - Ivan (admin) Token !!!
+   - http://localhost:3000/api/v1/orders/get/userorders/6055a6a8eafaa314670475cf   
+   
+
+
+
+=====================================================================================
+=====================================================================================
+===================================================================================== 
+  5. For Product Images and Gallery Update:
+--------------------------------------------
+
+ * POST (add) one product:
+---------------------------
+   - POST method
+   - http://localhost:3000/api/v1/products
+   - Body (with the new product info) --> form-data
+   
+name:Product 5 (boots)
+description:Product 5 description.
+richDescription:Product 5 richDescription.
+brand:Product 5 Brand
+image: ------> File (add) --> product-5-boots.jpg
+price:70
+category:6055a6a8eafaa314670475cf
+countInStock:5
+rating:5
+numReviews:15
+isFeatured:true
+
+   
+
+ * PUT (update/add/upload) gallery images for product with ID: 
+--------------------------------------------------------------
+   - PUT (upload) gallery images for product with ID 
+   - http://localhost:3000/api/v1/products/gallery-images/6055a6a8eafaa314670475cf
+   - Body (with the new product info) --> form-data
+   
+name:Product 5 (boots)
+description:Product 5 description.
+richDescription:Product 5 richDescription.
+brand:Product 5 Brand
+price:70
+category:6055a6a8eafaa314670475cf
+countInStock:5
+rating:5
+numReviews:15
+isFeatured:true
+images: ------> File (add) --> select some images
+
+   !!! Images (added or newly uploaded) could not be with same names !!!
+   
+   
+   
+ * To see a image --> Go to Browser and Search for:
+---------------------------------------------------
+   - http://localhost:3000/public/uploads/product-5-boots-1620292294917.jpeg
+                                          +--------------------------------+
+                                                          |
+                                                          V
+                                                          
+                                     image name (exact how is saved at /public/uploads/ )
+   
+   
    
    

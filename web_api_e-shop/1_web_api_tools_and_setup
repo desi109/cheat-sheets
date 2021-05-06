@@ -169,6 +169,7 @@ npm init
 npm install -g nodemon
 npm start
         You should see:
+        $ cd backend
         $ npm start
 
         > backend@1.0.0 start
