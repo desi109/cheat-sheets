@@ -1,0 +1,35 @@
+    Software Architechture   -->    Architectural Styles
+   -------------------------      ========================
+
+
+ Books:
+--------
+ - Software Engineering Design: Theory and Practice by Carlos E. Otero
+ - Software Engineering by Ian Sommerville 
+ 
+ 
+• Architectural patterns define the implementation strategies of those components and 
+connectors (‘how?’) - More domain specific.
+• Architectural styles define the components and connectors (‘what?’) - Less domain specific.
+
+
+ 
+   ♦  Architectural Styles:
+-------------------------------
+• Pipe and Filter: https://syedhasan010.medium.com/pipe-and-filter-architecture-bd7babdb908
+                   Examples: The architectural pattern is very popular and used in many 
+                   systems, such as the text-based utilities in the UNIX operating system. 
+                   Whenever different data sets need to be manipulated in different ways, 
+                   you should consider using the pipe and filter architecture. 
+                   - Compilers
+                   - UNIX Shell
+                   - ATM system
+                   
+• Data–Centered: 
+
+• Layered: https://medium.com/java-vault/layered-architecture-b2f4ebe8d587
+
+• Client–Server
+• Model–View–Controller
+• Implicit Invocation
+• Microservices

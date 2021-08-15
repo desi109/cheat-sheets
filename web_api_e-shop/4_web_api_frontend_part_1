@@ -1,0 +1,8 @@
+
+cd ~/e-shop
+npx create-react-app frontend
+cd frontend
+npm start
+killall -9 node
+kill -9 $(lsof -t -i:5000)   
+kill -9 $(lsof -t -i:3000)   

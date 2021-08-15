@@ -270,7 +270,8 @@ my-dog-is-nice
 {
     "name": "Ivan Ivanov",
     "email": "ivan.ivanov@gmail.com",
-    "passwordHash": "123456",
+    "passwordHash": "123456",          
+    //$2a$10$2QpHfU7nkzM0TCjJJtHlyeMMBTqIK0Ro0lldtqfbRzAsYH.dTILRy
     "phone": "0882883765",
     "isAdmin": true,
     "street": "ul. Prohodna 74",
@@ -289,6 +290,7 @@ my-dog-is-nice
     "name": "Marina Marinova",    
     "email":"marina.marinova@gmail.com",
     "passwordHash":"123456",
+    //$2a$10$LmGSH84FZa/bzMZ2GiEu2.JRSt1P2qJSvoynFVUmXvMjDjjgk4S5m
     "phone":"0895864306",
     "isAdmin":false,
     "street":"ul. Vitinq 23",
@@ -302,6 +304,7 @@ my-dog-is-nice
     "name": "Petur Petrov",    
     "email":"petur.petrov@gmail.com",
     "passwordHash":"123456",
+    //$2a$10$h4NhE5irhqDaCo/b7Ecm2.r0magWU1nVTeOvfAMuuG2FPe1QbOUCq
     "phone":"0883309301",
     "isAdmin":false,
     "street":"ul. Krasna 11",

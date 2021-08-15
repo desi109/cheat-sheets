@@ -1,0 +1,289 @@
+Java Spring Framework - Application
+-------------------------------------
+
+
+Configuration
+====================================
+
+
+For Windows:
+=============
+-------------------------------------
+    Java  ---> 
+---------------
+java -version
+    Download JDK. Install it. 
+    Open Environment Variables and New... to System Variables:
+       JAVA_HOME
+       C:\Program Files\Java\java-11-amazon-corretto
+
+       Path
+       %JAVA_HOME%\bin
+  
+java -version
+
+
+-------------------------------------
+    Maven --->
+---------------
+mvn -verion
+    Download Maven. 
+    Open Environment Variables and New... to System Variables:
+       M2_HOME
+       C:\Program Files\Maven
+    
+       M2
+       %M2_HOME%\bin
+
+       Path
+       %M2_HOME%\bin
+    
+mvn -verion
+
+
+-------------------------------------
+    Tomcat --->
+----------------
+    Download Maven. 
+    Open Environment Variables and New... to System Variables:
+       CATALINA_HOME
+       C:\Program Files\Tomcat
+
+cd C:\Program Files\Tomcat
+dir
+cd bin
+dir
+startup.bat
+
+    In browser open:  localhost:8080
+    To stop it:
+shutdown.bat
+   
+     
+-------------------------------------     
+    MySQL --->
+---------------
+
+
+
+====================================
+For Ubuntu:
+============
+sudo apt-get update 
+sudo apt-get upgrade
+
+-------------------------------------
+    Java  --->
+--------------- 
+java -version
+sudo apt-get install java-11-amazon-corretto
+cd /usr/lib/jvm/java-11-amazon-corretto/
+export JAVA_HOME=/usr/lib/jvm/java-11-amazon-corretto/
+echo $JAVA_HOME
+export PATH=$PATH:$JAVA_HOME
+echo $PATH
+java -version
+
+
+-------------------------------------
+    Maven --->
+---------------
+mvn -version
+sudo apt-get install maven
+mvn -version
+
+
+-------------------------------------
+    Tomcat --->
+---------------
+    Download Tomcat:  https://tomcat.apache.org/download-90.cgi
+               File:  tar.gz (pgp, sha512)
+    Under /home/dess/ dir make new dir 'web'. 
+    Copy-Paste  apache-tomcat-9.0.52   to   /home/dess/web/ 
+cd /home/dess/web
+export CATALINA_HOME=/home/dess/web/apache-tomcat-9.0.52
+echo $CATALINA_HOME
+cd apache-tomcat-9.0.52/bin
+./startup.sh
+
+    In browser open:  localhost:8080
+    To stop it:
+./shutdown.sh
+    
+    
+-------------------------------------
+    MySQL --->
+---------------
+sudo apt-get install mysql-server
+sudo mysql_secure_installation
+        --> y
+        --> 0
+        --> ..set a new password
+        --> y
+        --> y
+        --> n
+        --> y
+        --> y
+        
+        
+       Example:
+------------------------
+   Securing the MySQL server deployment.
+
+   Connecting to MySQL using a blank password.
+
+   VALIDATE PASSWORD COMPONENT can be used to test passwords
+   and improve security. It checks the strength of password
+   and allows the users to set only those passwords which are
+   secure enough. Would you like to setup VALIDATE PASSWORD component?
+
+   Press y|Y for Yes, any other key for No: y
+
+   There are three levels of password validation policy:
+
+   LOW    Length >= 8
+   MEDIUM Length >= 8, numeric, mixed case, and special characters
+   STRONG Length >= 8, numeric, mixed case, special characters and      
+   dictionary                  file
+
+   Please enter 0 = LOW, 1 = MEDIUM and 2 = STRONG: 0
+   Please set the password for root here.
+
+   New password: 
+
+   Re-enter new password: 
+
+   Estimated strength of the password: 50 
+   Do you wish to continue with the password provided?(Press y|Y for Yes, any other   
+   key for No) : y
+   By default, a MySQL installation has an anonymous user,
+   allowing anyone to log into MySQL without having to have
+   a user account created for them. This is intended only for
+   testing, and to make the installation go a bit smoother.
+   You should remove them before moving into a production
+   environment.
+
+   Remove anonymous users? (Press y|Y for Yes, any other key for No) : y
+   Success.
+
+
+   Normally, root should only be allowed to connect from
+   'localhost'. This ensures that someone cannot guess at
+   the root password from the network.
+
+   Disallow root login remotely? (Press y|Y for Yes, any other key for No) : n
+
+    ... skipping.
+   By default, MySQL comes with a database named 'test' that
+   anyone can access. This is also intended only for testing,
+   and should be removed before moving into a production
+   environment.
+
+
+   Remove test database and access to it? (Press y|Y for Yes, any other key for No) : y
+    - Dropping test database...
+   Success.
+
+    - Removing privileges on test database...
+   Success.
+
+   Reloading the privilege tables will ensure that all changes
+   made so far will take effect immediately.
+
+   Reload privilege tables now? (Press y|Y for Yes, any other key for No) : y
+   Success.
+
+   All done! 
+------------------------
+        
+        
+sudo mysql -u root -p
+
+     Enter password: 
+   Welcome to the MySQL monitor.  Commands end with ; or \g.
+   Your MySQL connection id is 11
+   Server version: 8.0.26-0ubuntu0.20.04.2 (Ubuntu)
+
+   Copyright (c) 2000, 2021, Oracle and/or its affiliates.
+
+   Oracle is a registered trademark of Oracle Corporation and/or its
+   affiliates. Other names may be trademarks of their respective
+   owners.
+
+   Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> show databases;
+   +--------------------+
+   | Database           |
+   +--------------------+
+   | information_schema |
+   | mysql              |
+   | performance_schema |
+   | sys                |
+   +--------------------+
+   4 rows in set (0,01 sec)
+
+mysql> create database travel_agency;
+   Query OK, 1 row affected (0,01 sec)
+
+mysql> use travel_agency;
+   Database changed
+   
+mysql> create user 'user'@'localhost' identified by 'password';
+   Query OK, 0 rows affected (0,03 sec)
+
+mysql> grant all privileges on travel_agency.* to 'user'@'localhost';
+   Query OK, 0 rows affected (0,02 sec)
+
+mysql> show databases;
+   +--------------------+
+   | Database           |
+   +--------------------+
+   | information_schema |
+   | mysql              |
+   | performance_schema |
+   | sys                |
+   | travel_agency      |
+   +--------------------+
+   5 rows in set (0,00 sec)
+
+mysql> exit
+   Bye
+
+
+
+
+    From Ubuntu Software download:  Mysql Workbench
+    Start the app and tap '+' next to 'MySQL Connections'.
+    This will open 'Setup New Connection' windows.
+         Connection name: travel_agency
+                Username: user
+         Tap -> Store in Keychain... -> password
+         Tap OK. Ready!
+         
+         
+    If there is an error:
+         An AppArmor policy prevents this sender from sending this message to this 
+         recipient; type="method_call", sender=":1.125" (uid=1000 pid=7944 comm="/snap/
+         mysql-workbench-community/5/usr/bin/mysql- wo" label="snap.mysql-workbench-
+         community.mysql-workbench- community (enforce)") 
+         interface="org.freedesktop.Secret.Service" member="OpenSession” error 
+         name="(unset)" requested_reply="0" destination=":1.13" (uid=1000 pid=2044 
+         comm="/usr/bin/gnome- keyring-daemon --daemonize --login" label="unconfined")
+    Run:
+sudo snap connect mysql-workbench-community:password-manager-service :password-manager-service
+
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+
