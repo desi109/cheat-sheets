@@ -69,6 +69,25 @@ shutdown.bat
 ====================================
 For Ubuntu:
 ============
+
+!!! Simple NEW way!!!
+----------------------
+       Instal SDK! :   https://sdkman.io/install
+curl -s "https://get.sdkman.io" | bash
+source "$HOME/.sdkman/bin/sdkman-init.sh"
+sdk version
+
+
+sdk install java11.0.12.7.1-amzn
+sdk install ant
+sdk inatall maven
+sdk inastall gradle
+sdk install tomcat
+
+-------------------------------------------------------------
+-------------------------------------------------------------
+ Old way:
+---------
 sudo apt-get update 
 sudo apt-get upgrade
 

@@ -1,0 +1,97 @@
+Angular - Setup and Start
+==========================
+
+1. Install NodeJS:
+(NodeJS will be used behind the scenes by the Angular CLI to bundle and optimize our project)
+--------------------------------------------------------------------------------------------------------------
+       Go to nodejs.org and download the latest version - uninstall (all) installed versions on your machine first.
+       Download the LTS version of NodeJS. 
+       You can download that version via this link (use the "LTS" version): https://nodejs.org/en/download/
+       !!! Make sure that you DON'T download NodeJS version 17! Because at the moment (22/11/2021), Angular doesn't work with that version !!!
+
+
+
+
+
+2. Update/Install npm:
+(the Node Package Manager or npm will be used to manage the different dependencies that the Angular project has)
+-----------------------------------------------------------------------------------------------------------------------------
+sudo npm install -g npm
+
+
+
+
+3. Update the Angular CLI:
+(the official Angular command-line interface)
+---------------------------------------------------
+sudo npm uninstall -g angular-cli @angular/cli 
+npm cache verify 
+sudo npm install -g @angular/cli@latest
+
+
+
+==========================================================================================================
+Some common issues & solutions:
+===============================
+      1. Creation of a new project takes forever (longer than 3 minutes)
+         That happens on Windows from time to time => Try running the command line as administrator
+
+      2. You get an EADDR error (Address already in use) 
+         You might already have another ng serve process running - make sure to quit that or use:
+ng serve --port ANOTHERPORT  
+
+      3. My changes are not reflected in the browser (App is not compiling)
+         Check if the window running `ng serve`  displays an error. 
+         If that's not the case, make sure you're using the latest CLI version and try restarting your CLI.
+===========================================================================================================    
+
+
+
+
+4. Create new angular project:
+-------------------------------
+ng new front-end  
+     OR
+ng new front-end --no-strict
+
+      Note: Strict mode is a special mode in which we can create our projects a bit easier.
+
+     
+     
+     
+5. Start the angular project:
+------------------------------ 
+cd front-end
+ng serve
+kill -9 $(lsof -t -i:4200)
+
+      This command basically bring up a development server that will run your build and for 
+      development-optimized app so that you can see it in the browser. 
+      The server runs on localhost:4200 by default.
+
+
+
+
+
+(6). Optional - install bootstrap:
+-----------------------------------
+ npm install --save bootstrap@3
+      
+      Go to angular.json file in section  "styles" and edit it as:
+      "styles": [
+              "node_modules/bootstrap/dist/css/bootstrap.css",
+              "src/styles.css"
+            ],
+
+
+
+(7). Create a component:
+---------------------------
+ng g c component-name --skipTests true
+     OR
+ng generate component component-name --skipTests true
+
+     OR
+ng g c other-component-name/component-name --skipTests true
+
+
