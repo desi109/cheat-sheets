@@ -1,0 +1,35 @@
+How dockerize an application
+=============================
+
+What is Docker and why to use it?
+---------------------------------
+ - Docker is a container technology -  a tool for creating and managing conatiners.
+ - A conatiner is a standardized unit of software or in other words, a package of code and 
+   dependancies to run that code (e.g.: NodeJS code + NodeJS runtime)
+ - The advantage is that the same container always will give you the exact same application and 
+   execution behavior!n No matter where or by whom it might be executed.
+   
+   
+Dockerizing is the process of packing, deploying, and running applications using Docker containers.
+Docker is an open source tool that ships your application with all the necessary functionalities as
+one package. You can use Docker to pack your application with everything you need to run the
+application (such as libraries) and ship it as one package - a container. Containers are created
+from images that specify their precise contents. Dockerizing is a big hit nowadays. All the big
+names use it - Google, VMware, or Amazon support it.
+
+
+1. Install docker:
+-------------------
+
+2. Creating the Dockerfile:
+----------------------------
+
+
+3. Containerize your application:
+----------------------------------
+
+4. Push the docker image to a docker repository(Dockerhub):
+-----------------------------------------------------------
+
+5. Pull the image and run it a ec2 instance:
+---------------------------------------------
