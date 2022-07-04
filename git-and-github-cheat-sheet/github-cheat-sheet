@@ -1,0 +1,147 @@
+==============================================================================================
+Git - using SSH:       
+----------------   
+   
+   Before we start connecting our machine with GitHub, it is important to ensure that things 
+   are happening in a secure way (using SSH). 
+
+   Connecting with GitHub is possible in two ways: 
+   
+   --> HTTPS - there is nothing wrong with this approach and it is definitely secure, but it 
+               might not always be the best approach. Depending on the operating system that you
+               are using. You may be prompted several times for your username and password when 
+               you are, for example, pushing changes to GitHub. Over time, that will become annoying. 
+               
+   -->   SSH - (Secure Shell) SSH is a protocol that allows for secure communication. 
+               Using SSH, we will create an SSH key, which can be linked to your GitHub account. 
+               When you then connect from your local machine with GitHub, you will not be prompted 
+               every time to enter your credentials. 
+               https://www.ssh.com/ssh/keygen/
+               
+   Using SSH is just as secure as HTTPS. 
+
+
+You can also see this link: 
+https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/connecting-to-github-with-ssh
+ 
+ 
+ 
+ 
+ Steps part 1:  Creating SSH key
+ -------------
+ 
+   When we connect with GitHub, it will notice that we are passing in our SSH key, and it will know 
+   that we are effectively who we are saying we are. It's like a token that will be used to validate
+   the connection. 
+ 
+ 
+ 
+1.---------------------------- 
+      https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/checking-for-existing-ssh-keys 
+   So let's first see if we already have a SSH key available.
+   In the root directory (user dir), type:
+   
+           ls -al ~/.ssh  -> lists the files in your .ssh directory, if they exist
+         
+         
+    By default, the filenames of the public keys are one of the following:  id_rsa.pub
+                                                                            id_ecdsa.pub
+                                                                            id_ed25519.pub
+                                                                            
+2.----------------------------
+    Create a new SSH key. Execute this command, passing in a couple of parameters, 
+    accept the defaults to save the file in the proposed directory.
+
+           ssh-keygen -t rsa -b 4096 -C "your_email@some.com"
+          
+           
+    You can add a passphrase. You can leave it empty. It basically adds some extra 
+    security, but we will leave it empty for now. And there you go. Now your SSH key 
+    has been created and you can see this:
+    
+           Generating public/private rsa key pair.
+           Enter file in which to save the key (/home/deisi/.ssh/id_rsa): 
+           Enter passphrase (empty for no passphrase): 
+           Enter same passphrase again: 
+           Your identification has been saved in /home/deisi/.ssh/id_rsa
+           Your public key has been saved in /home/deisi/.ssh/id_rsa.pub
+           The key fingerprint is:
+           SHA256:CMJmrD14MZU5M92+FIY+8kV6vT4XaoWD/VxiQxXrDZI deisi109deisi@gmail.com
+           The key's randomart image is:
+           +---[RSA 4096]----+
+           |    .+ o      .. |
+           | o .* o =    ... |
+           |  O .= = o  E.o  |
+           | * +..+.= . .o o |
+           |o +  o.=S+ +  . .|
+           | . .  . o = * .  |
+           |         . B =   |
+           |          = +    |
+           |         . o     |
+           +----[SHA256]-----+
+ 
+        
+           
+3.----------------------------
+    And the next thing we need to do is to add our SSH key to the ssh‑agent. 
+    Let's see if it is already running. We've executed this command to verify that:
+    
+           eval $(ssh-agent -s)
+           
+           
+    .. if the output is "Agent pid 59566", indeed the agent is running. 
+    
+4.----------------------------
+     Now, let's add the SSH key using ssh‑add. 
+     And we should specify the directory where our was created. 
+    
+           ssh-add ~/.ssh/id_rsa
+           
+     Our SSH key is now added to the ssh‑agent. 
+     
+
+           
+  Steps part 2:  Connecting to GitHub using SSH 
+ --------------
+     
+     And the next thing we need to do is letting GitHub know about our key. 
+     
+     
+ 5.----------------------------
+     Go to the directory where the key was generated. That is, in my case, under the user directory,
+     the .ssh directory. 
+     
+           cd /home/user/.ssh   -> for Linux
+
+      
+     There are two files in there, one has the extension ".pub" -> id_rsa.pub
+     Open this file with Notepad and then copy the contents of the file. 
+     Go back to GitHub, and under your Settings, branch to SSH and GPG keys. 
+     (https://github.com/settings/keys)
+    
+     In there, you can now add your SSH key. We can give it a title, for example Home Computer,
+     so that you can easily distinguish where this key is used. This allows you also to track back
+     later from where a change was made. 
+     
+     
+ 6.----------------------------     
+     Final thing is checking if the communication is possible between my local machine and GitHub.
+     Run command:
+     
+           ssh -T git@github.com
+           
+           
+     There will be a warning, but you can ignore that warning. Type 'yes'. 
+     If the output is:
+     
+           Hi username! You've successfully authenticated, but GitHub does not provide shell access.
+           
+           
+     .. GitHub now recognizes you, and you have authenticated successfully. 
+     From now on, all communication with GitHub will use you SSH key.
+     
+     
+     
+     
+==============================================================================================
+

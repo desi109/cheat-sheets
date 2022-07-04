@@ -1,0 +1,15 @@
+Basic additional commands:            
+--------------------------           
+  nautilus folder -> to open linux folder with GUI
+             pwd  -> print working directory             
+            tree  -> show system tree - all directories         
+             dir  -> list all files in directory (Windows)
+              ls  -> list all files in directory (Linux) 
+           mkdir  -> create a new folder
+        copy con  -> create an empty text (.txt) file  (Windows)      
+           touch  -> create an empty text (.txt) file  (Linux) 
+   gedit some.txt -> open .txt file for edit
+    code some.txt -> open .txt file for edit in Visual Studio Code
+     
+     cd C:/Users/project-name -> go to folder C:/Users/project-name
+                        cd .. -> go one folder back

@@ -1,0 +1,64 @@
+Commands - Initialize Git and GitHub repo:       
+         - first steps with Git and GitHub       
+-------------------------------------------
+   
+ 1.Go to folder C:/Users/project-name :         
+   cd C:/Users/project-name
+ 
+ 2.Initialize the repository:                          
+   git init -> initialize the repository
+   
+ 3.Create README.MD file into C:/Users/project-name :
+   echo "# project-name" >> README.MD 
+   
+ 4.Create .gitignore file into C:/Users/project-name :
+   touche .gitignore
+   
+ 5.Add content to .gitignore file.
+ 
+ 6.Move all files to staging (index):
+   git add . 
+   
+ 7.Create new snapshot of the project and files are now in your local Git repo:
+   git commit -m "Initial commit"
+   
+ 8.Go to GitHub and create new repo with name "project-name".
+ 
+ 9.Connect your local Git repo with your remote origin GitHub repo:
+   git remote add origin https://github.com/username/project-name.git
+                                                                            
+ 10.Push all files from your local Git repo into your remote origin GitHub repo:
+    git push -u origin master
+   
+ 11.Now if you go to your GitHub project URL, you will see all the files.
+ 
+ 
+ 
+====================================================================================== 
+Commands - Initialize GitHub and Git repo:              
+-------------------------------------------
+   
+ 1.Create new GitHub repo:
+   Name: project-name
+   + README.MD
+   + .gitignore
+           
+ 2. Edit .gitignore file.
+ 
+ 3.Clone the repo:         
+   git clone https://github.com/user/project-name
+   
+ 4. Edit the project locally. Add some new files.
+ 
+ 5.Move all files to staging (index):
+   git add . 
+   
+ 6.Create new snapshot of the project and files are now in your local Git repo:
+   git commit -m "Commit new files"
+                                                
+ 7.Push all files from your local Git repo into your remote origin GitHub repo:
+    git push origin master
+   
+ 8.Now if you go to your GitHub project URL, you will see all the files.
+ 
+ 

@@ -1,0 +1,321 @@
+==============================================================================================
+Install Git:    
+------------   
+
+    Go to https://git-scm.com/download/win -> this link directly download Git for Windows  
+    sudo apt-get install git -> directly download Git for Linux
+
+    git --version  ->  show the Git version (Git is installed)
+
+
+==============================================================================================
+Commands - git clone  :
+-----------------------  
+
+       git clone https://github.com/username/project-name  -> clone a remote repo on your 
+                                                              computer (local)                               
+                                                              
+                                                              
+==============================================================================================
+Commands - git help  :              
+----------------------   
+  
+   git help -> for help
+    man git -> show Git documentation for commands
+    
+    
+    
+==============================================================================================
+Commands - git config  :              
+------------------------   
+   
+               git config --global user.name "Your Name"  -> configure your name 
+    git config --global user.email "your_email@some.com"  -> configur your email 
+    
+    git config --global core.editor "code --wait --new-window" -> set editor
+    https://docs.github.com/en/free-pro-team@latest/github/using-git/associating-text-editors-with-git
+     
+          git config user.name -> show your name
+         git config user.email -> show your email
+            git config --list  -> show all configurations
+   git config --edit --global  -> default editor will open and show the global configuration file
+            git config --edit  -> default editor will open and show the configuration file
+                                        
+            
+      ----------------------------
+      ----------------------------  
+            warning: Pulling without specifying how to reconcile divergent branches is
+            discouraged. You can squelch this message by running one of the following
+            commands sometime before your next pull:
+
+            git config pull.rebase false  # merge (the default strategy)
+            git config pull.rebase true   # rebase
+            git config pull.ff only       # fast-forward only
+ 
+            You can replace "git config" with "git config --global" to set a default
+            preference for all repositories. You can also pass --rebase, --no-rebase,
+            or --ff-only on the command line to override the configured default per
+            invocation.
+      ----------------------------
+      ----------------------------      
+            
+            
+            
+==============================================================================================
+Commands - git status  :              
+------------------------
+
+   There are three states of every file in the project:
+   
+      +--> commited --> modifed --> staged -+
+     /                                      |
+    +---------------------------------------+
+  
+  commited - unmodified changes from the last commit snapshot.
+  modified - changes made to files since last commit snapshot.
+    staged - changes marked to be added into the next commit snapshot.
+    
+    
+               git status -> show status of the project          
+       git status --short -> show status of the project (shorter)
+           git status -s  -> show status of the project (shorter)
+
+ 
+==============================================================================================   
+Commands - git diff  :
+----------------------    
+        
+                      git diff -> compare NOT staged files, in our working directory
+   git diff e5d1a755 c7ac56625 -> show difference between two commits, in our working directory   
+             git diff --staged -> (only for staged files) 
+                                  compare the staged changes to our last commit snapshot
+                             
+                             
+                             
+==============================================================================================
+Commands - git log  :
+---------------------
+
+                  git log  -> show all commits
+                  git log --oneline --graph --decorate --all
+                git log -1 -> show las one commit 
+         git log --oneline -> show all commits on one line
+            git log --stat -> show all commits with details
+           git log --patch -> show all commits as patch
+
+==============================================================================================
+Commands - git commit  :
+------------------------
+                       
+    git commit -a -m "First commit"  <--->  git add .   +   git commit -m "First Commit"
+      git commit -am "First commit"  <--->  git add .   +   git commit -m "First Commit"   
+    
+    
+    How to write good commit messages?                                                      
+    -> https://chris.beams.io/posts/git-commit/
+
+
+==============================================================================================
+Commands - git rm  :
+--------------------
+
+            git rm file.txt -> untrack and delete file.txt from Git
+   git rm --cached file.txt -> untrack file.txt but NOT delet it from Git
+   git mv file.txt some.txt -> rename file.txt to some.txt
+   
+   
+==============================================================================================
+Commands - git checkout + git branch + git branch -d:
+-----------------------------------------------------
+
+ How to go back past in time and see the project?
+      git checkout c7ac56625 -> say "Git go back in past to this version of the project"
+ When you are ready turn back in present state of your project.
+      git checkout e457cce99 -> say "Git go back in present to this version of the project"
+                   --------
+                       +---> this is the commit id of your last commit
+                       
+                       
+                       
+                       
+              git branch dev ->  create new branch with name dev    
+            git checkout dev ->  checkout dev
+                       
+      git checkout -b dev <===>  git branch dev + git checkout dev 
+                             ->  create new branch with name dev and checkout dev
+                              
+                              
+                              
+                              
+   git checkout master -> checkout master
+            git branch -> show all local branches
+         git branch -l -> show all local branches
+         git branch -r -> show all remote branches
+   
+   
+   
+--------------------------  
+--------------------------
+   To delete local branch:
+   
+1. Got to other branch:    
+      git checkout develop
+       
+2. Delete branch feature:  
+      git branch -d feature
+
+             OR
+                                      
+      git branch -D feature -> force delete branch dev, even if it contains unmerged/unpushed
+                               commits. It goes without saying: please be careful with this command!
+                        
+---------------------------
+   To delete remote branch:
+   
+   git push origin --delete feature -> delete the remote branch feature
+   
+---------------------------
+---------------------------
+
+
+
+==============================================================================================
+Commands - git stash  : 
+-----------------------
+ 
+ How to stash files?
+ (this means that files stay untracked, and they are saved on stage)
+     
+1.   git add .
+2.   git stash
+3.   git status
+   
+   git stash list -> show what was stashed
+   git stash show -> show what was stashed with more details 
+    git stash pop -> undo git stash
+   
+   
+==============================================================================================
+Commands - git reset  :
+-----------------------
+ 
+ How to Reset ?
+ 
+       repo  |---to--->  staging
+        _ 
+       |          git reset --soft  -> remove the last commit from the Git history
+  soft |                               and move it back on staging
+       |   git reset --soft HEAD~3  -> remove the last 3 commits from the Git
+       |_                              history and move them back on staging
+       
+  -----------------------------------------------------------------------     
+      
+       repo  |---to----staging----to--->  working dir
+        _ 
+       |     git reset --mixed  -> remove the last commit from the Git
+ mixed |                           history and move it back to working dir
+       |_                 
+
+   ------------------------------------------------------------------------      
+        
+          repo  |---to----staging-->--to---working--dir---->   deleted
+         _ 
+        |          git reset --hard  -> remove the last commit from the Git history
+   hard |                               history and delete it
+        |_       
+       
+     
+           
+==============================================================================================
+Commands - git pull  + git fetch + git merge:
+----------------------------------------------
+  
+ 
+         git pull  <====>  git fetch + git merge
+         
+         git fetch -> bring down the changes made in the upstream repo, which you do not have 
+                      locally just yet. It will stop there, no merge will be done just yet.
+         git merge -> only when you performed git merge, your changes will be merged 
+          git pull -> is like a shortcut, git fetch and git merge will be done in one go
+         
+         
+
+        
+ How to Pull ?
+ 
+        git pull origin master --rebase  -> pull from origin remote master into 
+                                            local master, with rebasing
+                                      
+                                      
+==============================================================================================
+Commands - git merge  :
+-----------------------
+ 
+ How to Merge?
+
+1.    git checkout dev  \    merge dev into master   
+2.    git merge master  /
+    
+    
+1.    git checkout dev  
+2.    git merge master  --> If there is conflict, edit it and save it
+3.    git add .
+4.    git commit -m "Resolve merge conflict"
+
+
+==============================================================================================
+Commands - git push  :              
+---------------------- 
+
+   git push -u origin master -> branch 'master' set up to track 
+                                remote branch 'master' from 'origin'
+                             -> push local Git master repo changes into 
+                                remote GitHub origin master repo
+                             
+                             
+                             
+   git push origin master -> push local Git master repo changes into 
+                             remote GitHub origin master repo
+   
+
+==============================================================================================
+Commands - get remote branch that you do not have it locally :
+-------------------------------------------------------------- 
+   
+  To get remote branch that you do not have it locally. Let's name of the thid branch be 'fix'.
+     
+1.   git branch -r       -> show remote branches
+2.   git branch -l       -> show local branches
+3.   git fetch           -> bring down the changes made in the GitHub repo, which you do not have 
+                            locally just yet. This also means your new remote branch 'fix'.
+4.   git checkout fix    -> checkout the 'fix' branch, which you do not have locally
+
+
+
+==============================================================================================
+Commands - resolve conflict :
+----------------------------- 
+   
+  To resolve conflict. Let's say you have branch with name 'fix' and in it there 
+  is a file with name 'some.txt'
+  
+  
+1.   We edit some.txt on branch origin fix (GitHub).
+2.   We also edit some.txt on branch fix (Git).
+3.   We want to push our local fix branch changes. So we do first:
+     
+     git pull ->  to get all remote changes 
+     
+     The output will be: 
+     
+         Auto-merging some.txt
+         CONFLICT (content): Merge conflict in some.txt
+         Automatic merge failed; fix conflicts and then commit the result.
+         
+     It says that you have conflict and you should resolve it manually.
+4.   So open some.txt and edit the conflict.
+5.   git add some.txt
+6.   git commit -a -m "Resolve merge conflict"
+7.   git status
+8.   git push 
+
