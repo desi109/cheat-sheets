@@ -1,0 +1,161 @@
+Apache Kafka - Commands
+========================
+
+cd /home/user/kafka_2.12-3.1.0
+
+          Star the Zookeeper:
+bin/zookeeper-server-start.sh config/zookeeper.properties
+          If it works, you should see:    INFO binding to port 0.0.0.0/0.0.0.0:2181
+          
+          Star the Kafka:
+kafka-server-start.sh config/server.properties
+          If it works, you should see:    INFO [KafkaServer id=0] started
+          
+          
+          To stop:
+bin/kafka-server-stop.sh 
+bin/zookeeper-server-stop.sh 
+          
+          
+========================================================================================================================
+1. kafka-topics
+----------------
+
+        Get the documentation of next command:
+kafka-topics.sh 
+
+        Create a kafka topic:
+kafka-topics.sh --bootstrap-server localhost:9092 --topic first_topic --create --partitions 3 --replication-factor 1
+         OR
+kafka-topics.sh --bootstrap-server 127.0.0.1:9092 --topic first_topic --create --partitions 3 --replication-factor 1
+         OR for kafka under version 2.1, use:   
+kafka-topics.sh --zookeeper 127.0.0.1:2181 --topic first_topic --create --partitions 3 --replication-factor 1
+
+         NOTE: Replication factor should NOT be larger then started brokers!!! 
+               If we have started 1 kafka broker, we can definw only 1 replication factor.
+
+
+        List created topics:
+kafka-topics.sh --bootstrap-server localhost:9092 --list
+
+        Get info about the specific topic:
+kafka-topics.sh --bootstrap-server localhost:9092 --topic first_topic --describe
+
+        Delete topic:
+kafka-topics.sh --bootstrap-server localhost:9092 --topic first_topic --delete
+
+
+
+========================================================================================================================
+2. kafka-console-producer
+--------------------------
+
+        Get the documentation of next command:
+kafka-console-producer.sh 
+  
+         NOTE: First create a topic with: 
+kafka-topics.sh --bootstrap-server localhost:9092 --topic first_topic --create --partitions 3 --replication-factor 1
+
+ 
+         Start kafka producer and send meaasage to topic:
+kafka-console-producer.sh --broker-list 127.0.0.1:9092 --topic first_topic
+         And type some messages:  >Hello, User!
+                                  >How are you?
+                                  >Are you learning Kafka?
+                                  >Just another message :)
+         And type Ctrl+C to exit.
+
+        
+         Start kafka producer with configuration 'acks=all' :
+kafka-console-producer.sh --broker-list 127.0.0.1:9092 --topic first_topic --producer-property acks=all
+         And type some messages:  >Some message that is acked
+                                  >Just for fun
+                                  >Fun learning!
+         And type Ctrl+C to exit.
+
+
+========================================================================================================================
+3. kafka-console-consumer
+--------------------------
+
+        Get the documentation of next command:
+kafka-console-consumer.sh 
+
+
+         NOTE: First create a topic with: 
+kafka-topics.sh --bootstrap-server localhost:9092 --topic first_topic --create --partitions 3 --replication-factor 1
+
+         Launch the kafka consumer and wait for messages for the topic:
+kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic first_topic
+
+         Open a new terminal, start kafka producer and send meaasage to topic:
+kafka-console-producer.sh --broker-list 127.0.0.1:9092 --topic first_topic
+         And type some messages:  >This is a new message
+                                  >More messages
+                                  
+         You should be able to see the messages in the first console where kafka consumer is started.
+
+
+         Launch the kafka consumer and list all messages for topic from the beginning:
+kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic first_topic --from-beginning
+         You should see all the sent messages:    Are you learning Kafka?
+                                                  Some message that is acked
+                                                  How are you?
+                                                  Fun learning!
+                                                  Hello, User!
+                                                  Just another message :)
+                                                  More messages
+                                                  Just for fun
+                                                  This is a new message
+                                                  
+          NOTE: As you can see, the order of the messages in the consumer is not "total", the order is per partition.
+                Because "first_topic" was created with 3 partitions, the order is only guaranteed at the partition level. 
+                If you try with a topic that has 1 partition, you will see the total ordering.
+                                                  
+          Type Ctrl+C to exit.
+        
+                                                  
+========================================================================================================================
+4. kafka-consumer-groups
+-------------------------
+          
+          Consumers have to be part of a group, and a group is basically ID (it is the name of our application)
+kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic first_topic --group my-first-application
+                                   
+          List all consumer groups:
+kafka-consumer-groups.sh --bootstrap-server localhost:9092 --list
+
+          See details about a specific consumer groups:
+kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --group my-first-application
+
+
+
+========================================================================================================================
+5. kafka-consumer-groups
+-------------------------
+          How to make the consumer group to replay data?
+            
+          Reset offsets of consumer group (fom where it should start reading again):                                      
+kafka-consumer-groups.sh --bootstrap-server localhost:9092 --group my-first-application --reset-offsets --to-earliest --execute --topic first_topic 
+
+          Reset the offset by shifting forward with 2:
+kafka-consumer-groups.sh --bootstrap-server localhost:9092 --group my-first-application --reset-offsets --shift-by-2 --execute --topic first_topic 
+
+
+
+=========================================================================================================================
+6. kafka-console-producer  and  kafka-console-consumer  with KEYS
+------------------------------------------------------------------
+
+          Producer with keys
+kafka-console-producer --broker-list 127.0.0.1:9092 --topic first_topic --property parse.key=true --property key.separator=,
+> key,value
+> another key,another value
+
+
+          Consumer with keys
+kafka-console-consumer --bootstrap-server 127.0.0.1:9092 --topic first_topic --from-beginning --property print.key=true --property key.separator=,
+
+
+
+

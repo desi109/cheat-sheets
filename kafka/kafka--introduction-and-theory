@@ -1,0 +1,210 @@
+Apache Kafka
+=============
+
+1. Simple explanation of Kafka:
+-------------------------------
+You get a source system, and you have a target system. And then you need to exchange data.
+That looks quite simple, right? And then, what happens is, that after a while you have many
+source systems, and many target systems, and they all have to exchange data with one another,
+and things become really complicated. So the problems is that with a previous architecture,
+if we have four source systems and six target systems, well, do the math. You need to have 24
+integrations to write.And each integration as you may or may not know, comes with a lot of
+difficulties. Around the protocol you have to choose, which is how the data is transported,
+so TCP, HTTP, REST, FTP, JDBC. Then the data format, how the data is parsed, so binary, CSV, 
+JSON, Avro, Thrift and others. And the data schema and evolution, so how the data is shaped
+and how it may change in the future. Additionally, each time you integrate a source system
+with the target system, there will be an increased load from the connections.
+So how do we solve this? Well this is where Apache Kafka comes in. 
+
+So Apache Kafka, allows you to decouple your data streams and your systems. So now your source
+systems will have their data end up in Apache Kafka. While your target systems will source their
+data straight from Apache Kafka. And so this decoupling is what is so good about Apache Kafka,
+and what it enables is really really nice. So for example, what do we have in Kafka? Well you can
+have any data stream you can think about. For example, it can be website events, pricing data, 
+financial transactions, user interactions, and many more. Additionally, once the data is in Kafka,
+you may want to put it into any system you like, such as a data base, your analytics systems, your
+email system, or your audits.
+
+Apache Kafka:
+ - created by LinkedIn
+ - an open source project
+ - mainly maintained by a private company called Confluent
+ - under the Apache stewardship
+ - distributed, resilient architecture, and fault tolerant
+ - it scales horizontally
+
+There are Kafka clusters with over 100 brokers.
+It can also scale and is proven by LinkedIn and many other companies, that it can scale to 
+millions of messages exchanged per second. That's quite a lot of scale. It is extremely high
+performance, the latency to exchange data from one system to another is usually less than 
+10 millisecond if you have good machines. And this is what we call real time. Real time 
+means that the latency is really really low. Over 2,000 plus firms, 35% of the Fortune 500 
+use Kafka, such as LinkedIn, Airbnb, Netflix, Uber, Walmart, and so many others. 
+
+Use cases for Apache Kafka: 
+ - messaging system
+ - activity tracking
+ - gather metrics from many different locations (e.g fot IoT devices)
+ - gather logs from your applications
+ - stream processing (with Kafka streams API)
+ - decoupling of system dependencies (so reduce the load on your databases and your systems
+   by decoupling them)
+ - perform big data integrations for example with Spark, Flink, Storm, Hadoop, and other big 
+   data technologies
+
+
+So many companies are using Apache Kafka:
+ --> Netflix: 
+     is using Kafka to apply recommendations in real time while you're watching TV shows.
+     And this is why, basically, when you leave a TV show, you'll get a new recommendation right
+     away.
+ --> Uber:
+     uses Kafka to gather user, taxi, and trip data in real time to compute and forecast
+     demand, and computes the almighty surge pricing in real time. So Uber uses Kafka extensively.
+ --> LinkedIn:
+     uses Kafka to prevent spam, and their platform, collect user interactions and make better
+     connection recommendations all of that in real time.
+
+Basically as you can use, as you can see, all these companies are using Kafka so that they can make
+real time recommendation, real time decisions, give you real time insights to their users, and this
+is why it's so good. Now remember that in this, Kafka is only used as a transportation mechanism.
+People need, will still write their applications or web applications to make things work, but Kafka
+is really good at making your data move really fast at scale, in your company.
+
+
+=====================================================================================================
+2. Kafka theory:
+-----------------
+ --> Topics: a particular stream of data. 
+     =======
+     - similar to a table in a database, such as MySQL or Postgres
+     - you can have as many topics as you want in Kafka
+     - a topic as a set is going to be identified by its name
+     
+ --> Partitions: topics are split into partitions.
+     ===========
+     - each partiotion is ordered
+     - each message within a partition, gets an incremental id, called offset
+     
+ --> Offset:  is the id number of the message in a partition.
+     =======
+ 
+ 
+ 
+                                                                   +--> message
+               ______________                                      |
+              |                                                    |
+              |    +--------------+      +---+---+---+---+---+---+---+---+---+---+---+---+---+-------+
+              |    |              |      |   |   |   |   |   |   |   |   |   |   | 1 | 1 | 1 |       |
+              |    | Partition  0 | -->  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |   |   |   | ..... |
+              |    |              |      |   |   |   |   |   |   |   |   |   |   | 0 | 1 | 2 |       |
+              |    +--------------+      +---+---+---+---+---+---+---+---+---+---+---+---+---+-------+
+              |                                                                               
+              |    +--------------+      +---+---+---+---+---+---+---+---+---+---+---+---+---+-------+
+              |    |              |      |   |   |   |   |   |   |   |   |   |   | 1 | 1 | 1 |       |
+  Kafka Topic |    | Partition 1  | -->  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |   |   |   | ..... |
+              |    |              |      |   |   |   |   |   |   |   |   |   |   | 0 | 1 | 2 |       |
+              |    +--------------+      +---+---+---+---+---+---+---+---+---+---+---+---+---+-------+
+              |
+              |    +--------------+       +---+---+---+---+---+---+---+---+---+---+---+---+---+-------+
+              |    |              |       |   |   |   |   |   |   |   |   |   |   | 1 | 1 | 1 |       |
+              |    | Partition 2  | -->   | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |   |   |   | ..... |
+              |    |              |       |   |   |   |   |   |   |   |   |   |   | 0 | 1 | 2 |       |
+              |    +--------------+       +---+---+---+---+---+---+---+---+---+---+---+---+---+-------+
+              |______________                   |
+                                                |
+                                                +--> message
+              
+              
+
+Example:  We are a trucking company, and we have many, many trucks. And each truck has a GPS in it.
+========  And basically we want each truck to report the GPS position in some way, to Kafka. And so,
+          Kafka is in the middle and we're going to have a topic with name e.g. 'trucks_gps'. So this 
+          topic, 'trucks_gps', contains the position of all the trucks. Eeach truck, basically, through
+          some mechanism, will send the data to Kafka every 20 seconds, for example, it's arbitrary. And
+          each message, this is what goes into a partition, will contain the truck ID, and also the truck
+          position, latitude and longitude.
+          So the information here we have is that, we have each truck reporting, sending messages of their
+          own position to Kafka through the same 'trucks_gps' topic. All trucks, e.g. 10 thousand trucks, 
+          they are going to send the data out to the same topic. You don't have one topic per truck. You have
+          a topic, which is a stream of data, of all the trucks. And that's a very common pattern in Kafka.
+
+          Why do we want to have this stream in Kafka? Well, maybe because, you want to have consumers of your
+          data. So maybe you want to have a location dashboard for your employees so they can look at the trucking
+          data. Or maybe you want to have a notification service. For example, when a truck is running out of fuel,
+          or a truck has been driving for too long and it seems like the operator should take a break.
+
+
+Notes:
+======
++++ Offset only have meaning for a specific partition and order is going to be guaranteed only within 
+    a partition. (E.g. you can guarantee that offset 8 in partition 0 has been written after offset 7,
+    in partition 0, which has been written after offset 6, etc. But across partitions 0 and 1, we cannot
+    say which message has been written first, offset 8 in partition 0 or offset 8 in partition 1 ....
+    unless you read them both.)
++++ Data is kept only for a limited time (default is 1 week), but the offsets, they keep on incrementing.
+    They never go back to zero. 
++++ Once the data is written to a partition as well, it can't be changed. It's called immutability.
++++ Data is assigned randomly to a partition unless a key is provided.
+  
+  
+==========================================================================================================
+What holds the topics ?
+ --> Brokers:  is bassically a server.
+     =======
+     - each broker is identified by its ID number (integer)
+     - each broker contains certain topics partitions
+     - after connecting to any broker (called a bootstrap broker), upu will be connected to the entire cluser
+
+ --> Cluster:  is composed of multiple brokers, which means that it is composed from multiple servers/machines.
+     ========  
+  
+Example:
+========
+  --> Cluster with 3 brokers (101, 102, 103)
+  --> Topic-A with 3 partitions (0, 1, 2)
+  --> Topic-B with 2 partitions (0, 1)
+  --> Topic-C with 4 partitions (0, 1, 2, 3)
+  
+  +------------------------------------------------------------------------------------------------+
+  | Cluster                                                                                        |
+  |                                                                                                |
+  |    +-------------------------+    +-------------------------+    +-------------------------+   |
+  |    | Broker 101              |    | Broker 102              |    | Broker 103              |   |
+  |    |                         |    |                         |    |                         |   |
+  |    |                         |    |                         |    |                         |   | 
+  |    |  +-------------------+  |    |  +-------------------+  |    |  +-------------------+  |   |
+  |    |  | Topic-A           |  |    |  | Topic-A           |  |    |  | Topic-A           |  |   |
+  |    |  |  +-------------+  |  |    |  |  +-------------+  |  |    |  |  +-------------+  |  |   |
+  |    |  |  | Partition 0 |  |  |    |  |  | Partition 2 |  |  |    |  |  | Partition 1 |  |  |   |
+  |    |  |  +-------------+  |  |    |  |  +-------------+  |  |    |  |  +-------------+  |  |   |
+  |    |  +-------------------+  |    |  +-------------------+  |    |  +-------------------+  |   |
+  |    |                         |    |                         |    |                         |   |
+  |    |  +-------------------+  |    |  +-------------------+  |    |                         |   |
+  |    |  | Topic-B           |  |    |  | Topic-B           |  |    |                         |   |
+  |    |  |  +-------------+  |  |    |  |  +-------------+  |  |    |                         |   |
+  |    |  |  | Partition 1 |  |  |    |  |  | Partition 0 |  |  |    |                         |   | 
+  |    |  |  +-------------+  |  |    |  |  +-------------+  |  |    |                         |   |
+  |    |  +-------------------+  |    |  +-------------------+  |    |                         |   |
+  |    |                         |    |                         |    |                         |   |
+  |    |  +-------------------+  |    |  +-------------------+  |    |  +-------------------+  |   |
+  |    |  | Topic-C           |  |    |  | Topic-C           |  |    |  | Topic-C           |  |   |
+  |    |  |  +-------------+  |  |    |  |  +-------------+  |  |    |  |  +-------------+  |  |   |
+  |    |  |  | Partition 0 |  |  |    |  |  | Partition 2 |  |  |    |  |  | Partotopn 1 |  |  |   |
+  |    |  |  +-------------+  |  |    |  |  +-------------+  |  |    |  |  +-------------+  |  |   |
+  |    |  |                   |  |    |  +-------------------+  |    |  +-------------------+  |   |
+  |    |  |  +-------------+  |  |    |                         |    |                         |   |
+  |    |  |  | Partition 3 |  |  |    |                         |    |                         |   |
+  |    |  |  +-------------+  |  |    |                         |    |                         |   |
+  |    |  +-------------------+  |    |                         |    |                         |   |
+  |    |                         |    |                         |    |                         |   |
+  |    +-------------------------+    +-------------------------+    +-------------------------+   |
+  |                                                                                                |
+  +------------------------------------------------------------------------------------------------+
+  
+  
+  
+  
+  
+  
+  

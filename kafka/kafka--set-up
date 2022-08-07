@@ -1,0 +1,141 @@
+Apache Kafka - Set up
+=====================
+
+       Java have to be installed (Java 11 JDK)!!!
+java -version
+       Go to: https://kafka.apache.org/downloads
+ 
+====================================================================================================    
+1. Linux:
+----------
+       Download from:  Binary downloads --> Scala 2.12 --> kafka_2.12-3.1.0.tgz
+            Click on:  We suggest the following site for your download: 
+                       https://dlcdn.apache.org/kafka/3.1.0/kafka_2.12-3.1.0.tgz
+                     
+       Go to your Downloads, and extract the .tar file to a folder:
+cd Downloads/
+tar -xvf kafka_2.12-3.1.0.tgz -C ../
+cd ../kafka_2.12-3.1.0/
+       Copy the path to this folder, you will need it:
+pwd
+       Now we want to make sure that Kafka is working (description will be printed):
+bin/kafka-topics.sh
+
+       Add Kafka to the path as enviroment variable:
+cd ../../
+ll
+       Search for .bashrc file, and open it:
+vi .bashrc
+       Tap 'insert' or 'i' to write in the file.
+       At the bottom add: 
+       
+       export PATH=/home/user/kafka_2.12-3.1.0/bin:$PATH
+
+       Tap 'Esc' and then ':wq' to save the file and exit.
+       Open a new tab in the terminal and try if it works:
+kafka-topics.sh
+
+
+cd kafka_2.12-3.1.0/
+ll
+mkdir data
+mkdir data/zookeper
+ls data/
+
+vi config/zookeeper.properties
+          And edit the 'dataDir' to your home kafka zookeeper dir, e.g: 
+          dataDir=/home/user/kafka_2.12-3.1.0/data/zookeeper
+          
+          Check if it is set correctly:
+cat config/zookeeper.properties
+
+          Star the Zookeeper:
+bin/zookeeper-server-start.sh config/zookeeper.properties
+          If it works, you should see:    INFO binding to port 0.0.0.0/0.0.0.0:2181
+          
+          Open new terminal:
+cd /home/user/kafka_2.12-3.1.0
+ls data/zookeeper/ 
+          You should see, e.g:    version-2
+          
+          Make a dir which will hold the kafka data:
+mkdir data/kafka
+ls data
+vi config/server.properties
+          And edit the 'log.dirs' to your home kafka dir, e.g: 
+          log.dirs=/home/user/kafka_2.12-3.1.0/data/kafka
+          
+          Check if it is set correctly:
+cat config/server.properties
+
+          Star the Kafka:
+kafka-server-start.sh config/server.properties
+          If it works, you should see:    INFO [KafkaServer id=0] started
+          
+          Open new terminal:
+cd /home/user/kafka_2.12-3.1.0
+ls data/kafka/
+          You should see next files:    
+          cleaner-offset-checkpoint         log-start-offset-checkpoint     meta.properties  
+          recovery-point-offset-checkpoint  replication-offset-checkpoint
+
+  
+  
+                 To stop:
+bin/kafka-server-stop.sh 
+bin/zookeeper-server-stop.sh 
+
+
+
+====================================================================================================       
+2. Windows:
+-----------
+NOTE: Kafka 3.0 has a bug for Windows, either use Kafka 2.8 or wait for Kafka 3.0.1 or Kafka 3.1.0 
+(https://issues.apache.org/jira/browse/KAFKA-13391)
+
+
+       Download from:  Binary downloads --> Scala 2.12 --> kafka_2.12-3.1.0.tgz
+            Click on:  We suggest the following site for your download: 
+                       https://dlcdn.apache.org/kafka/3.1.0/kafka_2.12-3.1.0.tgz
+                       
+       Extract Kafka at the root of C:\kafka_2.12-3.1.0\bin\windows
+       Copy the directory:  C:\kafka_2.12-3.1.0\bin\windows
+       Setup Kafka bins in the Environment variables section by editing Path (in the User variables)
+       Add New path (to the Path): 
+       
+       C:\kafka_2.12-3.1.0\bin\wind
+       
+       
+      
+       Try Kafka commands using kafka-topics.bat (for example) from any folder
+cd C:\
+kafka-topics.bat
+
+        
+       Open new CMD and make next dirs:
+cd C:/kafka_2.12-2.0.0/
+mkdir data
+mkdir data/zookeeper
+mkdir data/kafka 
+       
+       Edit zookeeper and kafka configs, e.g from NotePad++
+       Open C:/kafka_2.12-2.0.0/config/zookeeper.properties and edit 'dataDir':
+       dataDir=C:/kafka_2.12-2.0.0/data/zookeeper
+       
+       Open C:/kafka_2.12-2.0.0/config/server.properties: and edit 'logDirs':
+       log.dirs=C:/kafka_2.12-2.0.0/data/kafka
+ 
+       Start zookeeper in CMD: 
+zookeeper-server-start.bat config\zookeeper.properties
+       If it works, you should see:    INFO [KafkaServer id=0] started
+       
+       Open another CMD and start kafka: 
+kafka-server-start.bat config\server.properties
+       If it works, you should see:    INFO [KafkaServer id=0] started
+
+
+
+
+
+      
+
