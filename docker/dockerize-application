@@ -18,8 +18,44 @@ from images that specify their precise contents. Dockerizing is a big hit nowada
 names use it - Google, VMware, or Amazon support it.
 
 
-1. Install docker:
--------------------
+1. Install docker:   https://docs.docker.com/get-docker/
+---------------------------------------------------------
+
+    
+    * For Linux (Ubuntu): https://docs.docker.com/engine/install/ubuntu/
+    - install Docker Engine only:  https://docs.docker.com/engine/install/
+ sudo apt-get update
+ sudo apt-get install \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gp
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null  
+  
+  
+
+
+    !!!! See the STEM REQUIREMENTS fot the other two !!!!
+    - intall Docker Toolbox if the requirements in the Docker site are NOT met
+    - intall Docker Desktop if the requirements in the Docker site are met
+   
+    * For Windows:  https://docs.docker.com/desktop/windows/install/
+    * For macOS:  https://docs.docker.com/desktop/mac/install/
+
+  
+    Check if Docker is installed properly:
+docker -v
+
+
+     Note: If you can't install Docker on your system, you can also look into this online playground: 
+           https://labs.play-with-docker.com/
+
+
+
 
 2. Creating the Dockerfile:
 ----------------------------
