@@ -9,6 +9,24 @@ What is Docker and why to use it?
  - The advantage is that the same container always will give you the exact same application and 
    execution behavior!n No matter where or by whom it might be executed.
    
+
++--------------------------------------+     +-------------------------+
+|                                      |  ➔  |        Container        |
+|                                            +-------------------------+
+|                                      |                                  
+|                                      +     +-------------------------+
+|                 Image                |  ➔  |        Container        |
+|                                      +     +-------------------------+
+|                                      |                               
+|                                      +     +-------------------------+
+|                                      |  ➔  |        Container        |
++--------------------------------------+     +-------------------------+
+
+ Single file with all the dependences           Instances of an image.  
+ and configuration required to run              They run as a programs 
+ a program                            
+   
+   
    
 Dockerizing is the process of packing, deploying, and running applications using Docker containers.
 Docker is an open source tool that ships your application with all the necessary functionalities as
@@ -18,6 +36,8 @@ from images that specify their precise contents. Dockerizing is a big hit nowada
 names use it - Google, VMware, or Amazon support it.
 
 
+
+=====================================================================================================================================================
 1. Install docker:   https://docs.docker.com/get-docker/
 ---------------------------------------------------------
 
@@ -36,7 +56,6 @@ echo \
   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
   $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null  
   
-  
 
 
     !!!! See the STEM REQUIREMENTS fot the other two !!!!
@@ -49,23 +68,426 @@ echo \
   
     Check if Docker is installed properly:
 docker -v
+docker version
 
 
      Note: If you can't install Docker on your system, you can also look into this online playground: 
            https://labs.play-with-docker.com/
+           
+_____________________________________________
+
+    Verify the docker installation by running the hello-world image.
+    * For Windows/macOS:
+docker run hello-world
+
+    * For Linux (Ubuntu):
+docker run hello-world
+      If you see something like this:   docker: Cannot connect to the Docker daemon at 
+                                        unix:///home/dess/.docker/desktop/docker.sock. 
+                                        Is the docker daemon running?. See 'docker run --help'.
+      Read the link:  https://docs.docker.com/engine/install/linux-postinstall/
+      And try with:
+sudo docker run hello-world
+
+      The output should be something like:   Hello from Docker!
+                                             This message shows that your installation appears to be working correctly.
+
+                                             To generate this message, Docker took the following steps:
+                                             1. The Docker client contacted the Docker daemon.
+                                             2. The Docker daemon pulled the "hello-world" image from the DockerHub.
+                                                (amd64)
+                                             3. The Docker daemon created a new container from that image which runs the
+                                                executable that produces the output you are currently reading.
+                                             4. The Docker daemon streamed that output to the Docker client, which sent it
+                                                to your terminal.
+
+                                             To try something more ambitious, you can run an Ubuntu container with:
+                                             $ docker run -it ubuntu bash
+
+                                             Share images, automate workflows, and more with a free Docker ID:
+                                             https://hub.docker.com/
+
+                                             For more examples and ideas, visit:
+                                             https://docs.docker.com/get-started/
+
+
+      What happened when we run 'docker run hello-world'?
+      -> The command 'docker run hello-world' starts up the Docker Client (Docker CLI). The Docker CLI i s in charge
+         of taking commands from you, then doing some kind of processing on them and communicating the commands over
+         to something called the Docker Server. 
+         When we ran the command 'docker run hello-world', that meant that we wanted to start up a new container using
+         the image with the name of hello-world. The hello-world image has a tiny little program inside of it whose 
+         purpose is to print out the message that you see as an output. That's the only purpose of that image. 
+         When we ran that command and it was issued over to the Docker server, a series of actions very quickly occurred 
+         in the background. The Docker server saw that we were trying to start up a new container using an image called 
+         helo-world. The first thing that the Docker server did was check to see if it already had a local copy, like a
+         copy on your personal machine of the hello-world image. So the Docker server looked into something called the 
+         image cache. Now because we just installed Docker on our personal computers, the image cache is currently empty.
+         We have no images that have already been downloaded before, so because the image cache is empty, the Docker server
+         decided to reach out to a free service called DockerHub. The DockerHub is a repository of free public images that 
+         you can freely download and run on your personal computer. So Docker Server reached out to DockerHub and said, 
+         "Hey, I'm looking for an image called hello-world. Do you have one?". Of course the DockerHub does. So Docker Server
+         downloaded this hello-world file and stored it on your personal computer in this image cache where it can now be rerun
+         at some point in the future very quickly without having to redownload it from the DockerHub.
+         After that the Docker Server then said, "Okay, great, I've got this image and now it's time to use it to create an instance
+         of a container". As we said, an instance container is an instance of an image. Its sole purpose is to run one very specific
+         program. So the Docker server then essentially took that single file, loaded it up into memory, created a container out of 
+         it, and then ran a single program inside of it. And that single program's purpose was to print out the message that you see
+         as an output.
+         
+                             +-----------------------+           +-----------------------+
+                             |     Your computer     |           |       DockerHub       |
++------------------------+   |  +----------------+   |           |   +---------------+   |
+| docker run hello-world | ➔ |  | Docker Client  |   | ┌—————————|——→|  hello-world  |———|——→ Single file with everything 
+|                        |   |  |                |   | |         |   |               |   |    needed to run one specific  
+|                        |   |  |                |   | |   ┌———— |———|               |   |    program                     
+|                        |   |  |                |   | |   |     |   |               |   |                                
++------------------------+   |  +----------------+   | |   |     |   +---------------+   |
+                             |           |           | |   |     |                       | 
+                             |           ↓           | |   |     |                       |  
+                             |  +----------------+   | |   |     |   +---------------+   |
+                             |  |  Docker Server |———|—┘   |     |   | Other Image A |   |   
+                             |  |                |   |     |     |   |               |   |  
+                             |  +----------------+   |     |     |   +---------------+   |
+                             |                       |     |     |                       |      
+                             |                       |     |     |                       |   
+                             |  +----------------+   |     |     |   +---------------+   |
+                             |  |   Image Cache  |←— |—————┘     |   | Other Image B |   |  
+                             |  |                |   |           |   |               |   |   
+                             |  |                |   |           |   |               |   |  
+                             |  |      .....     |   |           |   |               |   | 
+                             |  +----------------+   |           |   +---------------+   |
+                             |                       |           |                       | 
+                             +-----------------------+           +-----------------------+
+         
+
+         So that's what happens when you run this 'docker run' command. It reaches out to Docker Hub, it grabs the image and then it
+         creates a container out of that image.
+         
+         
+         
+         
+=====================================================================================================================================================
+2. Create and set up a Spring Boot Application:
+-----------------------------------------------
+         Install SDK man, in order to install also Spring Boot CLI:
+sudo curl -s "https://get.sdkman.io" | bash
+source "/home/deisi/.sdkman/bin/sdkman-init.sh"
+sdk version
+
+         Install Spring Boot CLI:
+sdk install springboot
+spring --version
+
+         Initialize the project by running:
+cd ~/Downloads/
+spring init --language=java --groupId=com.demo.spring.boot.docker --artifactId=demo.spring.boot.docker --name=demo.spring.boot.docker --description="Spring Boot with Docker demo application." --package-name=com.demo.spring.boot.docker --dependencies=web --build=gradle --packaging=jar --java-version=11 --version=0.1.0
+
+          Unzip the project and move it to other directory:
+mkdir -p ~/Projects/demo-spring-boot-docker
+unzip demo.spring.boot.docker.zip -d ~/GitHub/demo-spring-boot-docker
+ls -l ~/Projects/demo-spring-boot-docker
+
+          Delete the unneded zip file form the Downloads directory:
+rm demo.spring.boot.docker.zip 
+
+          Open project in IDE (for this demo I am using IntelliJ IDEA):
+cd ~/Projects/
+/snap/intellij-idea-ultimate/current/bin/idea.sh demo-spring-boot-docker
 
 
 
 
-2. Creating the Dockerfile:
+
+
+          Now you can create a simple application.
+          -- Open build.gradle file and add ath the bottom: 
+                 tasks.named("jar") {
+	             enabled = false
+                 }
+              
+          -- Open settings.gradle file and change:    
+             rootProject.name = 'demo.spring.boot.docker' ➔  to  ➔ rootProject.name = 'demo-spring-boot-docker'
+          
+          -- Open and edit:  src/main/java/com/spring/boot/docker/Application.java
+_____________________________________________________________________________________________________________________________ 
+_____________________________________________________________________________________________________________________________ 
+package com.demo.spring.boot.docker;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@SpringBootApplication
+@RestController
+public class Application {
+
+  @RequestMapping("/")
+  public String setHome() {
+    return "Hello Docker World!";
+  }
+
+  public static void main(String[] args) {
+    SpringApplication.run(Application.class, args);
+  }
+
+}
+______________________________________________________________________________________________________________________________________ 
+______________________________________________________________________________________________________________________________________
+
+          The class is flagged as a @SpringBootApplication and as a @RestController, meaning that it is ready for use by 
+          Spring MVC to handle web requests. @RequestMapping maps / to the setHome() method, which sends a "Hello Docker World!"
+          response. The main() method uses Spring Boot’s SpringApplication.run() method to launch an application. Now we can run 
+          the application without the Docker container (that is, in the host OS):
+
+          * For Gradle (as we use in this demo):
+cd demo-spring-boot-docker
+./gradlew clean build 
+java -jar build/libs/demo-spring-boot-docker-0.1.0.jar
+
+            Note before run the first command:  We can also specify Java version to build the project with, if it is needed:
+            ----------------------------------
+./gradlew clean build -Dorg.gradle.java.home=/usr/lib/jvm/java-11-amazon-corretto 
+
+
+
+          * For Maven:
+./mvnw package && java -jar target/demo-spring-boot-docker-0.1.0.jar
+ 
+ 
+          Then to see your “Hello Docker World!” message, go to  ➔  localhost:8080 
+          Finally DON'T forget to kill the process:
+kill -9 $(lsof -t -i:8080)
+
+
+
+
+
+=====================================================================================================================================================
+3. Creating the Dockerfile:
 ----------------------------
+         
+         Docker has a simple "Dockerfile" file format that it uses to specify the “layers” of an image. Create a simple file
+         in the base project dir wit exact name 'Dockerfile' and NO extensions. The Dockerfile will look something like this:
 
-
+     FROM openjdk:11-jdk
+     RUN groupadd -r spring && useradd -r -g spring spring
+     USER spring:spring
+     ARG JAR_FILE=build/libs/\*.jar
+     COPY ${JAR_FILE} demo-spring-boot-docker.jar
+     ENTRYPOINT ["java","-jar","/demo-spring-boot-docker.jar"]
+   
+   
+=====================================================================================================================================================
 3. Containerize your application:
 ----------------------------------
+ 
+         Build the docker image and see the docker image built  (the '.' at the end of each command is important):
+         
+         *For Gradle:
+sudo docker build -t demo-spring-boot-docker .
+         To specify build args you can use also:  
+         sudo docker build --build-arg JAR_FILE=build/libs/ -t demo-spring-boot-docker .
+         
+         *For Maven:
+sudo docker build -t demo-spring-boot-docker .
 
-4. Push the docker image to a docker repository(Dockerhub):
+         These commands build an image and tags it as demo-spring-boot-docker. This Dockerfile is very simple, 
+         but it is all you need to run a Spring Boot app with no frills: 
+         just Java (https://hub.docker.com/r/adoptopenjdk/openjdk11/) and a JAR file.  
+         Running applications with user privileges helps to mitigate some risks (see, for example, a thread on StackExchange).
+         So, an important improvement to the Dockerfile is to run the application as a non-root user.
+         The build creates a spring user and a spring group to run the application. It is then copied (by the COPY command) the
+         project JAR file into the container as 'demo-spring-boot-docker.jar', which is run in the ENTRYPOINT. The array form of the
+         Dockerfile ENTRYPOINT is used so that there is no shell wrapping the Java process. 
+         For more detail: https://spring.io/guides/topicals/spring-boot-docker
+sudo docker images 
+         To remove/delete image you can use:  sudo docker image rm image_id
+
+         Once the container is successfully built, run the container:
+sudo docker run -p 8080:8080 demo-spring-boot-docker
+       
+         
+         Now we have our first docker container up and running in our localhost. 
+         Open your browser and type in the url http://localhost:8080/ where you will see it.
+         
+         To kill the process use:
+kill -9 $(lsof -t -i:8080)
+         
+         
+
+
+=====================================================================================================================================================
+5. Push the docker image to a docker repository (DockerHub):
+------------------------------------------------------------
+ !!! First, go to https://hub.docker.com/ and create an account if you haven't already have one. !!!
+ 
+ 
+         Once we have our docker images built and successfully run, lets push this image to a docker repo so that we can
+         pull it in any instance having docker in it. We will use DockerHub repository which is configured as default 
+         repository by docker untill or unless specified to use a different repo. To login in DockerHub, type:
+sudo docker login 
+         The output will be something like this:
+             Login with your Docker ID to push and pull images from DockerHub. 
+             If you don't have a Docker ID, head over to https://hub.docker.com to create one. 
+             Username: USER 
+             Password: ********* 
+             Login Succeeded
+             
+             
+___________________________________________________________________________________________________________________________________________ 
+           
+         But if you get error like:
+             Error saving credentials: error storing credentials - err: exit status 1, out: `error storing credentials - err:
+             exit status 1, out: `pass not initialized: exit status 1: Error: password store is empty. Try "pass init".``
+         Do the next steps:
+         1) Download docker-credential-pass from https://github.com/docker/docker-credential-helpers/releases
+         2) Run:    
+tar -xvf docker-credential-pass.tar.gz
+chmod u+x docker-credential-pass
+sudo mv docker-credential-pass /usr/bin
+         3) You will need to setup docker-credential-pass. 
+            The following steps are based of: https://github.com/docker/docker-credential-helpers/issues/102#issuecomment-388634452)
+            3.1) Install gpg and pass:     
+sudo apt-get install gpg pass
+            3.2) Run:    
+gpg --generate-key 
+                 Enter your information:                Real name: Your Name
+                                                        Email address: your.email@gmail.com
+
+                 You should see something like this:    pub   rsa3072 2022-08-09 [SC] [expires: 2024-08-08]
+                                                        1234567890ABCDEF1234567890ABCDEF12345678
+                                                        uid                      Your Name <your.email@gmail.com>
+                                                        sub   rsa3072 2022-08-09 [E] [expires: 2024-08-08]
+                 Copy the 123... line
+                 
+            3.3) Run:
+pass init 1234567890ABCDEF1234567890ABCDEF12345678 
+pass insert docker-credential-helpers/docker-pass-initialized-check 
+                 And set the password.
+pass show docker-credential-helpers/docker-pass-initialized-check 
+                 You should see {} or another data when running the next command. 
+                 You shouldn`t see error like "pass store is uninitialized".
+docker-credential-pass list
+            3.4) Go /home/user/.docker/config.json:
+nano ~/.docker/config.json
+                 And set in root node the next line ➔   "credsStore": "pass" 
+                 To save changes:  ctrl+o
+                 
+                 
+         5) The 'docker login' comand should now work.
+sudo docker login
+           
+            To logout you can use: sudo docker logout
+
+
+         Note: If you get the error "pass store is uninitialized" in future run, run the below command 
+               (it will reload the pass store in memory):
+pass show docker-credential-helpers/docker-pass-initialized-check
+               It will ask your password and it will initialize the pass store. 
+               This is based off this discussion: https://github.com/moby/moby/issues/25169#issuecomment-431129898
+
+
+
+
+___________________________________________________________________________________________________________________________________________ 
+       
+ 
+         Build/Tag/Push a Docker Image with Docker commands  
+        -------------------------------------------
+        1. We have already build the docker image on Step 3. with the command: sudo docker build -t demo-spring-boot-docker .
+        2. Now we’re going to tag our new image and then push it to DockerHub. 
+           First, tag the image with ':latest' or ':0.1.0' using the command:  sudo docker tag [repo-name] USER/[repo-name]:[tag]
+                                                                               sudo docker tag [repo-name] USER/[repo-name]:latest
+                                                                               sudo docker tag [repo-name] USER/[repo-name]:0.1.0
+           So the command will be:                                         
+sudo docker tag demo-spring-boot-docker USER/demo-spring-boot-docker:0.1.0
+
+
+           To list the docker repositories:      sudo docker images
+           To remove/delete docker repository:   sudo docker image rm IMAGE_ID
+                                                 sudo docker image rm fb434121fc77             
+           To force remove/delete docker repository:   sudo docker image rm -f IMAGE_ID
+           
+           
+        3. Go to https://hub.docker.com/repositories/  ---> Create Repository
+           And create a repo with name demo-spring-boot-docker
+           
+        4. We tagged the image on step 2., so now we can push it to the DockerHub with:
+sudo docker push USER/demo-spring-boot-docker:0.1.0
+         Where USER is your DockerHub username. 
+         
+                
+         
+___________________________________________________________________________________________________________________________________________ 
+       
+         
+   Question:  What is the difference between an image and a repository?
+   ---------
+     Answer:  Yes, this is very confusing terminology.
+              Simplest answer ➔ Image: a single image.
+                              ➔ Repository: a collection of images.
+
+
+                      Details ➔ Image: Uniquely referenced by the Image ID, the 12 digit hex code (e.g. 91c95931e552)
+                              ➔ Repository: Contains one or more images. So the hello-world repository could contain 
+                                              two different images: 91c95931e552 and 1234abcd5678.
+
+
+              Let's say we have these images:
+                    REPOSITORY           TAG         IMAGE ID
+                    docker/whalesay      latest      fb434121fc77
+                    hello-world          latest      91c95931e552
+                    hello-world          v1.1        91c95931e552
+                    hello-world          v1.0        1234abcd5678
+                    
+              The repositories are: docker/whalesay, hello-world.
+              The images are fb434121fc77, 91c95931e552, 1234abcd5678. 
+              Notice that the 2nd and 3rd rows have the same Image ID, so they are the same image.
+              
+              The image aliases are:    
+                    docker/whalesay:latest
+                    hello-world:latest
+                    hello-world:v1.1
+                    hello-world:v1.0
+                    
+              So hello-world:latest and hello-world:v1.1 are simply two aliases for the same image.
+              Note that, if you leave out the tag when referencing an image alias, it will automatically add ':latest' default tag. 
+          
+              
+
+___________________________________________________________________________________________________________________________________________ 
+
+
+         Additional:  Build a Docker Image with Gradle/Maven  
+        -------------
+        You can build a tagged docker image with in one command:
+
+        * For Gradle:
+./gradlew bootBuildImage --imageName=demo-spring-boot-docker
+        * For Maven:
+          To get started quickly, you can run the Spring Boot image generator without even changing your pom.xml 
+          (remember that the Dockerfile, if it is still, there is ignored):
+./mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=demo-spring-boot-docker
+
+
+
+
+=====================================================================================================================================================
+6. Pull a Docker Image from remote repository (DockerHub):
 -----------------------------------------------------------
 
-5. Pull the image and run it a ec2 instance:
----------------------------------------------
+         Let's say we are still login with 'sudo docker login' command.
+         We can pull an image with:    sudo docker pull USER/[repo-name]:[tag]
+                                       sudo docker pull USER/[repo-name]:latest
+                                       sudo docker pull USER/[repo-name]:0.1.0
+                                        
+         So the command will be:
+sudo docker pull USER/demo-spring-boot-docker:0.1.0
+         Where USER is your DockerHub username. 
+
+
+
+
+

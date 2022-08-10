@@ -1,0 +1,26 @@
+Docker: Images and Containers
+------------------------------
+
+
+===================================================================================================================================
+1. Images:
+-----------
+    Images are one of the two core building blocks Docker is all about (the other one is "Containers"). 
+    Images are blueprints/templates for containers. They are read-only and contain the application as well as the necessary 
+    application environment (operating system, runtimes, tools, etc.). Images do not run themselves, instead, they can be 
+    executed as containers. Images are either pre-built (e.g. official images you find on DockerHub) or you build your own
+    images by defining a Dockerfile. 
+
+    Dockerfiles contain instructions which are executed when an image is built with 'docker build .' command,every instruction then 
+    creates a layer in the image. Layers are used to efficiently rebuild and share images.
+
+
+===================================================================================================================================
+2. Containers:
+---------------
+    Containers are the other key building block Docker is all about. Containers are running instances of images. When you create
+    a container with 'docker run' command, a thin read-write layer is added on top of the image. Multiple containers can therefore
+    be started based on one and the same image. All containers run in isolation, i.e. they don't share any application state or 
+    written data. You need to create and start a container to start the application which is inside of a container. So it's 
+    containers which are in the end executed - both in development and production.
+

@@ -1,4 +1,15 @@
 
+-----------------------------------SDK man----------------------------------------------------------       
+     Install SDK man, in order to install also Spring Boot CLI:
+sudo curl -s "https://get.sdkman.io" | bash
+source "/home/deisi/.sdkman/bin/sdkman-init.sh"
+sdk version
+
+
+-----------------------------------Spring Boot CLI--------------------------------------------------    
+     Install Spring Boot CLI:
+sdk install springboot
+spring --version
 
 
 -----------------------------------Spring Boot------------------------------------------------------

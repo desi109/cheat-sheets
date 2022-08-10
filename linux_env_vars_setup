@@ -102,7 +102,7 @@ spring --version
 sudo apt update
 
 sudo apt install git
-git config --global user.email "deisi_deisi@abv.bg"
+git config --global user.email "deisi109deisi@gmail.com"
 git config --global user.name "Desislava Milusheva"
   
 sudo apt install curl
