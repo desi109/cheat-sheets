@@ -181,15 +181,15 @@ spring --version
 
          Initialize the project by running:
 cd ~/Downloads/
-spring init --language=java --groupId=com.demo.spring.boot.docker --artifactId=demo.spring.boot.docker --name=demo.spring.boot.docker --description="Spring Boot with Docker demo application." --package-name=com.demo.spring.boot.docker --dependencies=web --build=gradle --packaging=jar --java-version=11 --version=0.1.0
+spring init --language=java --groupId=com.demo.spring.boot.docker --artifactId=demo-spring-boot-docker --name=demo-spring-boot-docker --description="Spring Boot with Docker demo application." --package-name=com.demo.spring.boot.docker --dependencies=web --build=gradle --packaging=jar --java-version=11 --version=0.1.0
 
           Unzip the project and move it to other directory:
 mkdir -p ~/Projects/demo-spring-boot-docker
-unzip demo.spring.boot.docker.zip -d ~/GitHub/demo-spring-boot-docker
+unzip demo-spring-boot-docker.zip -d ~/Projects
 ls -l ~/Projects/demo-spring-boot-docker
 
           Delete the unneded zip file form the Downloads directory:
-rm demo.spring.boot.docker.zip 
+rm demo-spring-boot-docker.zip 
 
           Open project in IDE (for this demo I am using IntelliJ IDEA):
 cd ~/Projects/
@@ -206,9 +206,6 @@ cd ~/Projects/
 	             enabled = false
                  }
               
-          -- Open settings.gradle file and change:    
-             rootProject.name = 'demo.spring.boot.docker' ➔  to  ➔ rootProject.name = 'demo-spring-boot-docker'
-          
           -- Open and edit:  src/main/java/com/spring/boot/docker/Application.java
 _____________________________________________________________________________________________________________________________ 
 _____________________________________________________________________________________________________________________________ 
@@ -352,7 +349,7 @@ sudo mv docker-credential-pass /usr/bin
             3.1) Install gpg and pass:     
 sudo apt-get install gpg pass
             3.2) Run:    
-gpg --generate-key 
+sudo gpg --generate-key 
                  Enter your information:                Real name: Your Name
                                                         Email address: your.email@gmail.com
 
@@ -363,15 +360,15 @@ gpg --generate-key
                  Copy the 123... line
                  
             3.3) Run:
-pass init 1234567890ABCDEF1234567890ABCDEF12345678 
-pass insert docker-credential-helpers/docker-pass-initialized-check 
+sudo pass init 1234567890ABCDEF1234567890ABCDEF12345678 
+sudo pass insert docker-credential-helpers/docker-pass-initialized-check 
                  And set the password.
-pass show docker-credential-helpers/docker-pass-initialized-check 
+sudo pass show docker-credential-helpers/docker-pass-initialized-check 
                  You should see {} or another data when running the next command. 
                  You shouldn`t see error like "pass store is uninitialized".
-docker-credential-pass list
+sudo docker-credential-pass list
             3.4) Go /home/user/.docker/config.json:
-nano ~/.docker/config.json
+sudo nano ~/.docker/config.json
                  And set in root node the next line ➔   "credsStore": "pass" 
                  To save changes:  ctrl+o
                  
@@ -384,7 +381,7 @@ sudo docker login
 
          Note: If you get the error "pass store is uninitialized" in future run, run the below command 
                (it will reload the pass store in memory):
-pass show docker-credential-helpers/docker-pass-initialized-check
+sudo pass show docker-credential-helpers/docker-pass-initialized-check
                It will ask your password and it will initialize the pass store. 
                This is based off this discussion: https://github.com/moby/moby/issues/25169#issuecomment-431129898
 
