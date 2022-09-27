@@ -1,0 +1,116 @@
+Docker LAB
+===========
+Here are some examples of interesting Docker tasks/problems/causes and their solutions.
+
+
+___________________________________________________________________________________________________________________________________________               
+
+How to enter bash of an ubuntu docker container?    
+================================================    
+            
+docker run -t -i ubuntu:20.04 /bin/bash 
+
+         Running a terminal session within a container. Try to run a container that executes /bin/bash. The reason this works and keeps
+         the container running (running /bin/bash) is because the -i and -t options (specifically -i) keep STDIN open and so /bin/bash
+         does not immediately terminate thus terminate the container. The reason you also need/want -t is because you presumably want 
+         to have an interactive terminal-like session so t creates a new pseudo-tty for you. -- Furthermore if you looked at the output
+         of docker ps -a without using the -i/-t options you'd see that your container terminated normally with an exit code of 0.
+
+root@d9c9381db9cd:/# echo "Hello Ubuntu!"
+Hello Ubuntu!
+root@d9c9381db9cd:/# exit
+
+___________________________________________________________________________________________________________________________________________  
+___________________________________________________________________________________________________________________________________________               
+
+How to run a docker container in detached mode?    
+===============================================  
+              
+         Detached mode, shown by the option --detach or -d, means that a Docker container runs in the background of your terminal. 
+         To try this, let's run a simple HTTP server with Python in a python:2.7, docker image pulled from DockerHub:
+         
+docker run -d -p 1234:1234 python:2.7 python -m SimpleHTTPServer 1234
+docker ps
+
+         The output would be:
+           CONTAINER ID    IMAGE         COMMAND                      NAMES
+           0fae2d2e8674    python:2.7    "python -m SimpleHTT.."      suspicious_pike
+           
+         If we open the browser at the IP of our docker host on port 1234 (e.g. http://localhost:1234/), we will see the listing of
+         the root directory inside your container. Docker automatically creates a correct port mapping between the container and host
+         port 1234, thanks to the -p 1234:1234 option. 
+         
+         
+         You can connect to the container by using the exec command and running a bash shell:
+docker exec -ti 0fae2d2e8674 /bin/bash
+root@868bc43694eb:/# ps -ef | grep python
+         The output would be:
+           root           1       0  0 04:33 ?        00:00:00 python -m SimpleHTTPServer 1234
+           root          14       7  0 04:43 pts/0    00:00:00 grep python
+root@868bc43694eb:/# exit
+
+___________________________________________________________________________________________________________________________________________  
+___________________________________________________________________________________________________________________________________________               
+
+How to commands to manage the entire life cycle of a container?     CREATE/START/STOP/RESTART/REMOVE
+===============================================================     
+
+         *1* Create a container:  
+         -----------------------       
+docker create -P --expose=1234 python:2.7 python -m SimpleHTTPServer 1234
+
+
+         *2* List all existing containers:
+         ---------------------------------
+docker ps -a
+         The output would be:
+           CONTAINER ID    IMAGE         COMMAND                   CREATED           .....   NAMES
+           868bc43694eb    python:2.7    "python -m SimpleHTT…"    10 seconds ago    .....   vibrant_heisenberg
+
+
+         *3* Start the containers:
+         -------------------------
+docker start 868bc43694eb
+
+
+         *4* List all RUNNING containers:
+         --------------------------------
+docker ps
+         The output would be:
+           CONTAINER ID    IMAGE         COMMAND                   CREATED             STATUS          .....     NAMES
+           868bc43694eb    python:2.7    "python -m SimpleHTT…"    10 seconds ago      Up 3 seconds    .....     vibrant_heisenberg
+           
+           
+         *5* Restart a container:
+         ------------------------
+docker restart 868bc43694eb
+docker ps     
+
+
+         *6* Stop container:  
+         --------------------
+             To stop a running container, you have a choice between docker kill (which will send a SIGKILL signal to the container) 
+             or docker stop (which will send a SIGTERM and after a grace period will send a SIGKILL). The end result will be that
+             the container is stopped and is not listed in the list of running containers returned by docker ps. However, the container
+             has not yet disappeared (i.e., the filesystem of the container is still there); you could restart it with docker restart
+             or remove it forever with docker rm:
+docker kill 868bc43694eb
+docker ps               
+            
+             
+         *7* Remove container permanently:  
+         ---------------------------------
+docker rm 868bc43694eb
+docker ps -a
+
+
+             Note:  If you have a lot of stopped containers that you would like to remove, use a subshell to do it in one command. 
+             -----  The -q option of docker ps will return only the containers’ IDs:
+docker rm $(docker ps -a -q)
+
+
+
+
+
+
+___________________________________________________________________________________________________________________________________________  
