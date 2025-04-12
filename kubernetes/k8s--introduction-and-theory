@@ -1,0 +1,186 @@
+Kubernetes (k8s) is an open-source system for automating deployment, scaling, and management of containerized
+applications. It groups containers that make up an application into logical units for easy management and discovery.
+
+
+The Big Picture
+ 1 or more --> Master Node(s)
+  |--> It knows how to manage the worker nodes.
+
+  Worker Nodes --> can be physical servers or virtual machines
+   |--> Together they form a cluster.
+
+  Master will start on the worker nodes Pods. Pods are way to host containers.
+   |--> Pod is like a box containing docker container.
+   We can have many pods if we'd like on a given machine.
+   That's where Kubernetes comes into play for horizontal scaling pods.
+
+  Pods need way to be deployed.
+   |--> Deployment: ReplicaSet
+
+  Pods need way to communicate with the outside world or just among themselves within the cluster.
+   |--> Communication: Kubernetes Services
+
+  +------------------------------------------------------------------------------------------------+
+  | Cluster                                                                                        |
+  |                                                                                                |
+  |    +-------------------------+    +-------------------------+    +-------------------------+   |
+  |    | Worker Node             |    | Master Node             |    | Worker Nod              |   |
+  |    |                         |    |                         |    |                         |   |
+  |    |                         |    |                         |    |                         |   |
+  |    |  +-------------------+  |    |                         |    |  +-------------------+  |   |
+  |    |  | Pod               |  |    |                         |    |  | Pod               |  |   |
+  |    |  |  +-------------+  |  |<---|                         |--->|  |  +-------------+  |  |   |
+  |    |  |  | Container   |  |  |    |                         |    |  |  | Container   |  |  |   |
+  |    |  |  +-------------+  |  |    +-------------------------+    |  |  +-------------+  |  |   |
+  |    |  +-------------------+  |                                   |  +-------------------+  |   |
+  |    |                         |                                   |                         |   |
+  |    |  +-------------------+  |                                   +-------------------------+   |
+  |    |  | Pod.              |  |                                                                 |
+  |    |  |  +-------------+  |  |                                                                 |
+  |    |  |  | Container   |  |  |                                                                 |
+  |    |  |  +-------------+  |  |                                                                 |
+  |    |  +-------------------+  |                                                                 |
+  |    +-------------------------+                                                                 |
+  +------------------------------------------------------------------------------------------------+
+
+  The way that Master Node communicates with the Worker Nodes is through the Kubernetes API.
+  There is something called etcd (Store) on the Master Node. It is like a DB that stores everything the Master Node
+  needs to track for the cluster. There is also Controller Manager and Scheduler on the Master Node.
+  Manager is responsible for making sure that the desired state of the cluster matches the actual state.
+  Scheduler is responsible for scheduling the pods on the worker nodes.
+
+  We as a developers can interact with the cluster through the Kubernetes API using kubectl (CLI).
+  It sends the request to the Master Node.Those requests can be scheduled to run on our Worker Nodes within the cluster.
+  To communicate the Master Node <---with---> Worker Nodes, they need to have a little agent installed and running on
+  each node, called kubelet. Also it is needed a Container Runtime (Docker, containerd, etc.) to run the containers
+  within the pods. Also it is needed network capabilities, and there is something called kube-proxy that can ensure
+  each pod gets a unique IP address and can communicate with other pods in the cluster.
+
+
+Running K8s Locally
+--------------------
+  - Minikube: It is a tool that makes it easy to run Kubernetes locally. It runs a single-node Kubernetes cluster
+  inside a VM on your laptop.
+  GitHub: https://github.com/kubernetes/minikube
+
+  - Docker Desktop: It has Kubernetes built-in. You can enable it in the settings.
+  URL: https://www.docker.com/products/docker-desktop
+
+  kind: It is a tool for running local Kubernetes clusters using Docker container nodes.
+  URL: https://kind.sigs.k8s.io/
+
+  kubeadm: It is a tool for running local Kubernetes clusters using containerd container nodes.
+  URL: https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm
+
+
+Running K8s Locally --> via Docker Desktop
+-------------------------------------------
+  1. Install Docker Desktop and get it up and running.
+     URL: https://www.docker.com/products/docker-desktop
+     Go to Docker Desktop settings and click 'Enable Kubernetes', then 'Apply & restart'.
+  2. Open a terminal and run 'kubectl version' to check if kubectl is installed.
+
+
+Enable the Web UI K8s Dashboard: https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/
+---------------------------------
+  1. Deploying the Dashboard UI:
+     # Add kubernetes-dashboard repository
+     helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
+     # Deploy a Helm Release named "kubernetes-dashboard" using the kubernetes-dashboard chart
+     helm upgrade --install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard --create-namespace --namespace kubernetes-dashboard
+  2. To access the dashboard, run:the following command to create an admin user:
+       kubectl -n kubernetes-dashboard port-forward svc/kubernetes-dashboard-kong-proxy 8443:443
+
+  3. Create file dashboard-adminuser.yaml with the following content:
+     apiVersion: v1
+     kind: ServiceAccount
+     metadata:
+       name: admin-user
+       namespace: kubernetes-dashboard
+     ---
+     apiVersion: rbac.authorization.k8s.io/v1
+     kind: ClusterRoleBinding
+     metadata:
+       name: admin-user
+     roleRef:
+       apiGroup: rbac.authorization.k8s.io
+       kind: ClusterRole
+       name: cluster-admin
+     subjects:
+     - kind: ServiceAccount
+       name: admin-user
+       namespace: kubernetes-dashboard
+
+  4. Run the following command to apply the configuration:
+     kubectl apply -f dashboard-adminuser.yaml
+  5. Run the following command to get the token:
+     kubectl create token admin-user -n kubernetes-dashboard
+  6. Run the following command to access the dashboard:
+     kubectl proxy
+     The command kubectl proxy starts a proxy server that allows you to access the Kubernetes API server locally.
+     It listens on 127.0.0.1:8001 by default and forwards requests to the Kubernetes API server.
+     This is useful for accessing the Kubernetes Dashboard or other API resources from your local machine.
+
+  7. Check if the kubernetes-dashboard-kong-proxy service exists:
+     kubectl get services -n kubernetes-dashboard
+     If the service does not exist, deploy the Kubernetes Dashboard using Helm:
+     helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
+     helm upgrade --install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard --create-namespace --namespace kubernetes-dashboard
+     Verify the service is created:
+     kubectl get services -n kubernetes-dashboard
+     Access the dashboard again:
+     kubectl proxy
+     Then open the URL:
+     https://localhost:8443/#/secret?namespace=_all
+     https://localhost:8443/#/service/kubernetes-dashboard/kubernetes-dashboard-kong-proxy?namespace=_all
+     http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/kubernetes-dashboard-kong-proxy
+
+   8. Playground: run nginx:alpine container in a Pod: kubectl run [name-of-pod] --image=nginx:alpine
+      kubectl run my-nginx --image=nginx:alpine
+      Go to Namespaces --> default --> Pods --> my-nginx:  https://localhost:8443/#/pod?namespace=default
+
+
+
+Hint:
+-----
+To create a permanent token for the admin-user in the kubernetes-dashboard namespace, you can create a Secret that contains the token. Here are the steps:
+1. Create a ServiceAccount and ClusterRoleBinding:
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: admin-user
+  namespace: kubernetes-dashboard
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: admin-user
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: admin-user
+  namespace: kubernetes-dashboard
+
+Save this content to a file named dashboard-adminuser.yaml and apply it:
+kubectl apply -f dashboard-adminuser.yaml
+
+2. Create a Secret for the token:
+apiVersion: v1
+kind: Secret
+metadata:
+  name: admin-user-token
+  namespace: kubernetes-dashboard
+  annotations:
+    kubernetes.io/service-account.name: admin-user
+type: kubernetes.io/service-account-token
+
+Save this content to a file named admin-user-token.yaml and apply it:
+kubectl apply -f admin-user-token.yaml
+
+3. Retrieve the token:
+kubectl get secret admin-user-token -n kubernetes-dashboard -o jsonpath="{.data.token}" | base64 --decode
+
+This will create a permanent token for the admin-user that you can use to access the Kubernetes Dashboard.

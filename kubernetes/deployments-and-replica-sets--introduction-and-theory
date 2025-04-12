@@ -1,0 +1,118 @@
+A ReplicaSet is a declarative way to manage Pods. Think of it as kind of the boss of the Pods that sits behind the sense
+to make sure that they working efficiently. And if one of them get sick, we can get that replaced.
+A ReplicaSet acts as a Pod controller:
+    - it can act as a self-healing mechanism
+    - it can ensure that a specified number of Pod replicas are running at any given time
+    - it provides fault tolerance - if a Pod fails, it can be replaced
+    - it can be used to scale Pods horizontally - increase or decrease the number of Pods with a simple command
+    - it relies on the Pod template to create new Pods (YAML files)
+So as a result of this, there is no need to create Pods directly. Instead, we can use Deployments and ReplicaSets to do that.
+And ReplicaSets are actually used by Deployments, but how the Deployments sits in this process?
+The Deployments are really just a higher-level wrapper around ReplicaSets. ReplicaSets ultimately use controllers to control
+the pods, Deployments make that process  even easier. So a Deployment is responsible for managing ReplicaSets and it will
+use those ReplicaSets to scale the pods. It supports zero-downtime updates by creating and destroying ReplicaSets. It also
+provides a rollback functionality to revert to a previous version of the Deployment. It creates a unique label that is
+assigned to the ReplicaSet and the generated Pods. The YAML is very similar to a ReplicaSet, one of the main differences
+is the kind that is defined.
+
+
+A Deployment sits up at higher level. It is kind iof wraps a ReplicaSet. It is also a declarative way to manage Pods, but
+it uses ReplicaSets under the covers. So in the evolution of Kubernetes, ReplicaSets came before Deployments.
+Then Deployments came out, and they kind of wrapped and simplified the overall functionality.
+
+From a Pod prospective, we know that pods represent the most basic resource in Kubernetes, and they can be created and
+destroyed, but are never recreated. So What happens if a Pod is destroyed? That's where ReplicaSets and Deployments come
+in to ensure we have the correct number of pods that are running.
+
+
+Create a Deployment
+--------------------
+To create a deployment we will use again YAML files, and the nice thing about the deployments is that you don't have to
+create the replica sets. They are going to run behind the sciences, they will handle making sure we have the required
+number of pods. Deployments are high-level wrapper and they will take care of that for us. To crete a deployment we are
+going to write a YAML file, very similar in structure to what we did with the Pod. And then we are going to use the
+'kubectl' to either create or apply that YAML file, to get that deployment and the underlying replica sets going.
+
+Example of a Deployment YAML file:
+apiVersion: apps/v1                    # k8s API version
+kind: Deployment                       # Resource type
+metadata:                              # Metadata about the deployment
+    name: frontend                     # Name of the deployment
+    labels:                            # Labels to identify the deployment
+        app: my-nginx
+        tier: frontend
+spec:
+    selector:                         # Select Pod template label(s). The selector is used to 'select' the template to use (based on the labels)
+        matchLabels:
+            tier: frontend
+    template:                          # Template used to create the Pods/Containers (note that the selector matches the labels)
+    metadata:
+        labels:
+            tier: frontend
+      spec:
+        containers:                    # Container that will run in the Pod
+        - name: my-nginx
+          image: nginx:alpine
+          livenessProbe:               # Define lines probe (readiness probes can also be defined). Check if the container is alive
+            httpGet:
+            path: /index.html          # Check /index.html file on port 80
+            port: 80
+            initialDelaySeconds: 15
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 1
+
+
+Commands:
+1. Create a Deployment:
+    kubectl create -f file-deployment.yml
+2. Create or Apply changes to a Deployment:
+    kubectl apply -f file-deployment.yml
+3. Use --save-config when you want to use 'kubectl apply' in the future:
+     kubectl create -f file-deployment.yml --save-config
+4 Get list of all Deployments:
+    kubectl get deployments
+5. Show list of all Deployments and their labels:
+    kubectl get deployments --show-labels
+6. To get information about a Deployment with a specific label:
+    kubectl get deployments -l app=my-nginx
+7. To delete a Deployment:
+    kubectl delete deployment [deployment-name]
+    kubectl delete deployment my-nginx
+  OR
+    kubectl delete -f file-deployment.yml
+8. Scale a Deployment Pods to 5:
+    kubectl scale deployment [deployment-name] --replicas=3
+    kubectl scale deployment my-nginx --replicas=3
+9. Scale a Deployment by referencing the YAML file:
+    kubectl scale -f file-deployment.yml --replicas=3
+10. To get information about a Deployment:
+    kubectl describe [deployment|pod] [deployment-name|pod-name]
+    kubectl describe deployment my-nginx
+    k describe deployment my-nginx
+
+
+Deployment Options:
+--------------------
+Let's say we currently rolled out a specific version of an image, that is running inside of a pod such as nginx:1.14.2-alpine.
+And we would like to move that forward to version 1.15.0-alpine. Normally, kind of in the old days, we have to stop the
+old container and then bring up the new one and there might be a little bit of downtime between those. So what deployments
+allow us to do is a ZERO-DOWNTIME deployment.
+
+    !!!  ZERO DOWNTIME deployments allow software updates to be deployed to production without impacting end users.
+
+In essence, the new pods are brought up, and once those are running, old pods are killed off, and network traffic is
+rerouted. And deployments will doi all that for us. This is how pods can be updated without impacting the end users.
+
+Several options are available:
+ - Rolling Update: This is the default deployment strategy. It gradually replaces old Pods with new ones.
+ - Blue/Green Deployment: This is a strategy where you have two identical environments, one is live and the other is not.
+                          When we are sure the new environment is working correctly, we can switch the traffic to the new
+                          environment.
+ - Canary Deployment: This is a strategy where you release a new version to a small subset of users before rolling it out
+                      to everyone. This is a way to test the new version in a production environment.
+ - A/B Testing: This is a strategy where you release two versions of an application and compare the results.
+ - Rollbacks: This is a strategy where you can revert to a previous version of the Deployment.
+
+So to do the Rolling Update we use only command 'kubectl apply -f file-deployment.yml' and giving the updated YAML file.
+This automatically updates the deployments and the pods.

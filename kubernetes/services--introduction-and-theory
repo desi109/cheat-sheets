@@ -1,0 +1,112 @@
+A SERVICE provides a single point of entry for accessing one or more pods. It is a stable endpoint that can be used to
+access the pods.
+Since Pods live and die, can we rely on the IP address of a Pod to access it?
+The answer is no, we can't. That's where Services come in. To explain this better, let's take an example. So let's say
+we have an external caller and that calls into a frontend pod with an IP address and a container, and then that calls
+some backend pod. Well, what if one of those IP addresses changes because the pod actually goes down and has to be
+replaced. So that's why we can rely on a pod's IP address, because IPs change a lot as pods change. And here we need
+services, which act as a stable endpoint to access the pods.
+
+            External Caller ------> Front-end Pod ------> Back-end Pod
+                                      Container             Container
+                                      10.0.0.43             10.0.0.45
+
+The goal in life of a service is to extract that IP addresses from consumers. So if we take a look at the example below,
+we have the service at a fixed IP, but then it is going to know how to talk to the pods behind it.
+
+      my-app                                   my-app
+  +-------------+                         +-------------+
+  |   Service   | ----------------------> |     Pod     |
+  | 10.0.0.1:80 |                         | |Container| |
+  |             |                         +-------------+
+  |             |                           10.0.0.43:80
+  |             |
+  |             |
+  |             |                              my-app
+  |             |                         +-------------+
+  |             | ----------------------> |     Pod     |
+  +-------------+                         | |Container| |
+                                          +-------------+
+                                            10.0.0.53:80
+
+The 'my-app' labels are used to associate pods with a service. Now, as the service comes up, we can rely on that IP
+address, but the behind-the-scans working of the IP of the pods, that's going to be handled by the services. So if a
+pod dies and a new comes up, the service will know that IP, and is gonna know how to load balance between those pods,
+which is a built-in feature. Services creates endpoints which sit between a Service and a Pod.
+
+Services can be of different types:
+  - ClusterIP: Exposes the service on a cluster-internal IP (default). Choosing this value makes the service only
+               reachable from within the cluster. This is the default ServiceType.
+               So, Service IP is exposed internally within the cluster. Only Pods within the cluster can access the
+               Service. This type of service allows Pods to talk to other Pods within the cluster.
+  - NodePort: Exposes the service on each Node's IP at a static port (the NodePort). A ClusterIP service, to which the
+              NodePort service will route, is automatically created. You'll be able to contact the NodePort service, from
+              outside the cluster, by requesting <NodeIP>:<NodePort>.
+              So, this type expose the Service on each Node's Ip at a static port. It also allocates a port from a range
+              (default is 30000-32767). Each Node proxies the allocated port (the NodePort) to the Service.
+  - LoadBalancer: Exposes the service externally using a cloud provider's load balancer. NodePort and ClusterIP services,
+                  to which the external load balancer will route, are automatically created.
+                  So, this type exposes the Service externally using a cloud provider's load balancer. NodePort and
+                  ClusterIP Services are created. Each Node proxies the allocated port (the NodePort) to the Service.
+  - ExternalName: Maps the service to the contents of the externalName field (e.g. foo.bar.example.com), by returning a
+                  CNAME record with its value. No proxying of any kind is set up.
+                  So, this type of service acts as an alias for an external service. It allows to act as a proxy for an
+                  external service. External service details are hidden from the cluster (easier to change).
+
+
+Creating a Service with kubeclt:
+--------------------------------
+Q: How can we access a Pod from outside of the k8s?
+A: Port forwarding.
+
+We can use kubectl port-forward to forward a local port to a Pod port.
+Next command will listen on port 8080 locally and forward to port 80 in Pod
+    kubectl port-forward pod/[pod-name] 8080:80
+    kubectl port-forward my-nginx 8080:80
+
+Next command will listen on port 8080 locally and forward to Deployment's Pod
+    kubectl port-forward deployment/[deployment-name] 8080
+
+Next command will listen on port 8080 locally and forward to Service's Pod
+    kubectl port-forward service/[service-name] 8080
+
+
+Creating a Service with YAML file:
+-----------------------------------
+apiVersion: v1                # k8s API version
+kind: Service                 # k8s resource type (Service)
+metadata:                     # Metadata about the Service
+  name: frontend             # Name of the Service (each Service gets a DNS entry)
+  labels:                     # Labels to identify the Service
+    app: my-nginx
+    tier: frontend
+spec:
+  type: NodePort              # Type of Service (ClusterIp, NodePort, LoadBalancer) - default is ClusterIP
+                              # Set Service type to LoadBalancer is normally used in cloud environments. Other type is ExternalName
+  selector:                   # Select Pod template label(s) that the Service will apply to
+    app: my-nginx             # Service will apply to resources with a label of app: my-nginx
+    ports:                    # Define container target port and yhe port for the service
+    - name: http
+      port: 80                # Define container target port(s) and the port(s) for the Service
+      targetPort: 80          # Port that the container is listening on
+      nodePort: 30001         # Optional set NodePOrt value (defaults between 30000-32767)
+
+
+NOTE: A frontend Pod can access a backend Pod using backend:port and with that we don't have to worry about the IP
+      addressing. So we don't need to reference th actual IP address, we just reference the name.
+
+Commands:
+----------
+1. Create a Service:
+    kubectl create -f file-service.yml
+2. Update or Create a Service:
+    kubectl apply -f file-service.yml
+3. Delete a Service:
+    kubectl delete -f file-service.yml
+4. Test a Service and Pod with curl:
+   Shell into a Pod and test a URL. Add -c [containerId] in cases where multiple containers are running in the Pod
+    kubectl exec -it [pod-name] -- curl -s http://podIP
+    OR
+    kubectl exec -it [pod-name] -it sh
+    Note: In (Alpine) Linux first install curl with:  apk add curl
+    curl -s http://podIP

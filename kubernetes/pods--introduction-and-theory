@@ -1,0 +1,222 @@
+Pod is the basic execution unit of a K8s application - the smallest and simplest unit in the K8s object model that you
+create or deploy. Pods are like a host for the containers. A Pod can host one or more containers.
+Pods are environment for containers.
+
+Pods are a way to organize the different parts (server, caching, APIs, DBs, etc.) of your application.
+Pod has an IP address, memory, volumes, etc. And these things are shared across containers in the pod.
+Pods can be scaled horizontally by adding more pod replicas.
+
+Pods live and die but never come back to life. So if k8s sees a Pod that is unhealthy or sick, it can automatically
+remove it and then replace it.
+
+So the Master Node is going to schedule Pods on the Worker Nodes. The Worker Nodes are going to run the Pods. And we can
+scaled these Pods horizontally by adding more replicas of the Pod. These replicas are just a copies or clones of the
+Pods, and then k8s can load balance the traffic between these replicas. If one of these Pods get sick, k8s will monitor
+that and it can automatically remove it and replace it with a newly created one (new health Pod).
+
+Pods within a Worker node have unique IP address, and this by default is a cluster IP address. And then the containers
+within the Pods have their own unique IP address.
+ --> Pod containers share the same Network namespace (share IP/port)
+ --> Pod containers have the same loopback network interface (localhost)
+ --> Container processes need to bind to different ports within a Pod
+ --> Ports can be reused by containers in separated Pods share the same Network namespace (share IP/port)
+
+
+Create a Pod Up and Running in K8s
+-----------------------------------
+  There are several different ways to schedule a Pod:
+   --> kubectl run command
+   --> kubectl create/apply command with a YAML file
+
+  Run nginx:alpine container in a Pod: kubectl run [name-of-pod] --image=nginx:alpine
+  kubectl run my-nginx --image=nginx:alpine
+  Go to Namespaces --> default --> Pods --> my-nginx:  https://localhost:8443/#/pod?namespace=default
+
+      kubectl get all --> retrieve information about Kubernetes Pods, Deployments, Services, etc.
+      kubectl get pods --> retrieve information about Kubernetes Pods
+
+  As a Pod is brought to life, it is going to grt a cluster IP address. A cluster IP address is only exposed to the
+  nodes and the pods within a given cluster, and it is not accessible outside of the cluster.
+
+  So what we do if we brought up NGINX, for example, and we want to test it from our local machine or Docker Desktop.
+  Then we need to expose the Pod port to be able to get to it.
+      kubectl port-forward [pod-name] [local-port]:[pod-port] --> enable Pod container to be called externally
+      kubectl port-forward [name-of-pod] 8080:80
+      --> 8080 - external port (ex. to call from a browser)
+      --> 80 - internal port (ex. the port that the container is running on inside of the Pod)
+      But what it does is it exposes that port through the node so that we can then call into it.
+
+  To delete/kill a Pod:
+      kubectl delete pod [name-of-pod] --> delete a Pod
+      kubectl delete pod my-nginx
+
+  (For OLD K8s versions under v1.18) To delete Deployment that manages the Pod:
+  Running a Pod will case a Deployment to be created. A Deployment is a higher level object that manages Pods.
+  To delete a Pod we can also find the Deployment and delete it.
+      kubectl delete deployment [name-of-deployment] --> delete a Deployment
+
+
+
+Playground:
+$ k run my-nginx --image=nginx:alpine
+pod/my-nginx created
+
+$ k get pods
+NAME       READY   STATUS    RESTARTS   AGE
+my-nginx   1/1     Running   0          10h
+
+$ k get services
+NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   11h
+
+$ k port-forward my-nginx 8080:80
+Forwarding from 127.0.0.1:8080 -> 80
+Forwarding from [::1]:8080 -> 80
+Handling connection for 8080
+Handling connection for 8080
+
+Go to: http://localhost:8080/ and see the NGINX welcome page.
+
+Ctrl+C to stop the port forwarding.
+$ k get pods                                                                                                                                                        desislavamilusheva@Desislavas-MacBook-Pro cheat-sheets % k get pods
+NAME       READY   STATUS    RESTARTS   AGE
+my-nginx   1/1     Running   0          10h
+
+$ k delete pod my-nginx
+pod "my-nginx" deleted
+
+$ k get pods                                                                                                                                                        desislavamilusheva@Desislavas-MacBook-Pro cheat-sheets % k get pods
+No resources found in default namespace.
+
+
+
+Create a Pod with a YAML file
+------------------------------
+1. Create file my-nginx-pod.yaml with the following content:
+apiVersion: v1
+kind: Pod
+metadata:
+    name: my-nginx-pod
+    labels:
+        app: nginx
+        rel: stable
+spec:
+  containers:
+    - name: my-nginx-container
+      image: nginx:alpine
+      ports:
+        - containerPort: 80
+
+2. Perform a trail create and also validate the YAML:
+kubectl create -f my-nginx-pod.yaml --dry-run=client --validate=true
+
+3. Run the following command to apply the configuration:
+k apply -filename my-nginx-pod.yaml
+OR --> k apply -f my-nginx-pod.yaml
+
+
+4. Other commands:
+    k get pod my-nginx-pod -o yaml
+    The command 'k get pod my-nginx-pod -o yaml' will show the Pod configuration in YAML format.
+
+   k describe pod my-nginx-pod
+   The command 'k describe pod my-nginx-pod' will show detailed information about the Pod.
+
+
+5. k exec -it my-nginx-pod -- /bin/sh
+   OR
+   k exec -it my-nginx-pod -it sh
+   This command will open a shell in the container of the Pod. You can then run commands in the container.
+   For example, you can run 'ls' to list the files in the container.
+
+   exit
+   To exit the shell in the container.
+
+6. k edit -f my-nginx-pod.yaml
+    The command 'k edit -f my-nginx-pod.yaml' will open the Pod configuration in an editor (VIM). You can then make changes
+    to the configuration and save the file to apply the changes.
+
+
+
+Pods Health
+-----------
+K8s relies on Probes to determine the health of a Pod container. A Probe is a diagnostic performed periodically by
+the K8s on the container. There are 2 types of Probes:
+  1. Liveness Probe - checks if the container is alive and healthy (When should a container restart?).
+                      If the Liveness Probe fails, the container will be restarted.
+  2. Readiness Probe - checks if the container is ready to serve traffic (When should a content start receiving traffic?).
+                       If the Readiness Probe fails, the container will be removed from the Service load balancer.
+
+     NOTE:If a Pod itself is deleted and has a deployment behind it, then it can be automatically recreated and the
+     container is recreated. If the container in the pod fails one of these health checks, then it can be restarted. And
+     the restartPolicy is responsible for that, and it defaults to Always (you can also override it).
+
+  Types of Probes:
+  --> ExecAction - executes a command inside the container (if returns 0, the container is healthy)
+  --> TCPSocketAction - TCP check against the container's IP address on a specific port (if successful, the container is healthy)
+  --> HTTPGetAction - HTTP GET request against container (if returns 200-400, the container is healthy)
+
+  Probes can have the following results:
+    --> Success - the probe succeeded
+    --> Failure - the probe failed
+    --> Unknown - the probe could not be performed (ex. container is not running)
+
+  Example: HTTP Liveness Probe
+    apiVersion: v1
+    kind: Pod
+    ...
+    spec:
+      containers:
+        - name: my-nginx-container
+          image: nginx:alpine
+          livenessProbe:                     # Define the Liveness Probe
+            httpGet:
+            path: /index.html                # Check /index.html on port 80
+            port: 80
+            initialDelaySeconds: 15          # Wait 15 seconds
+            timeoutSeconds: 2                # Timeout after 2 seconds
+            periodSeconds: 5                 # Check every 5 seconds
+            failureThreshold: 1              # Allow 1 failure before failing the Pod
+           ports:
+            - containerPort: 80
+    ...
+
+
+  Example: Exec Liveness Probe
+    apiVersion: v1
+    kind: Pod
+    ...
+    spec:
+      containers:
+        - name: liveness
+          image: k8s.gcr.io/busybox
+          args:                                                                 # Define args fot the container
+            - /bin/sh
+            - -c
+            - touch /tmp/healthy; sleep 30; rm -rf /tmp/healthy; sleep 600
+        livenessProbe:                                                          # Define the Liveness Probe
+            exec:
+              command:                                                          # Define action/command to execute
+                - cat
+                - /tmp/healthy
+            timeoutSeconds: 2                # Timeout after 2 seconds
+            periodSeconds: 5                 # Check every 5 seconds
+    ...
+
+
+  Example: Readiness Probe
+    apiVersion: v1
+    kind: Pod
+    ...
+    spec:
+      containers:
+        - name: my-nginx-container
+          image: nginx:alpine
+          readinessProbe:                    # Define the Readiness Probe
+            httpGet:
+              path: /index.html              # Check /index.html on port 80
+              port: 80
+            initialDelaySeconds: 2           # Wait 2 seconds
+            periodSeconds: 5                 # Check every 5 seconds
+
+

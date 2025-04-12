@@ -1,0 +1,211 @@
+How do you store application state/data and exchange it between POds with K8s?
+The answer is: Volumes (although there are other ways to do it, like DB).
+When container comes back up after it was restarted and you want to get it, the volumes can help you with that.
+
+Volume can be used to hold data and state for Pods and containers, and even access it if that container is restarted.
+We know that pods live and die, and their file system is short-lived and ephemeral. The volumes can be used to store
+state/data and then use it in a Pod. So you might be containerizing a database, for example. Well, the logs and the data
+needs to be put somewhere. You might be writing to logs, in general. Wherever the situation can be, a pod in the world
+of k8s can have multiple volumes attached to it, and then containers can create what's called mountPath to access tha
+volume.
+
+Kubernetes supports different types of volumes:
+ - Volumes
+ - Persistent Volumes
+ - Persistent Volume Claims
+ - Storage Classes
+
+A volume reference a storage location. It must have an unique name. It is attached to a POd and may or may not be tied
+to the Pod's lifetime (depending on the type of volume). A volume mount is used to reference a volume by name and
+define a mountPath.
+
+Volume Types:
+ - EmptyDir - directory for strong 'transient' data (shares a Pod's lifetime) useful for sharing files between
+              containers running in a pod
+ - HostPath - Pod mounts into the node's filesystem
+ - nfs - An NFS (Network File System) share mounted into a Pod
+ - configMap/secret - specific tye of volumes that provide a Pod with access to K8s resources
+ - persistentVolume - Provides Pods with a more persistent storage option that is abstract from the details
+ - cloud - cluster-wide storage options:
+            * AWS - Elastic Block Store
+            * Azure - Azure Disk and Azure File
+            * GCP - GCE Persistent Disk
+            * etc...
+ - and much more...
+
+
+Example with emptyDir volume:
+-----------------------------
+apiVersion: v1
+kind: Pod
+spec:
+  volumes:                                   # Define initial volume named 'html' that is an empty directory (lifetime of the Pod)
+  - name: html
+    emptyDir: {}                             # EmptyDir is the volume type
+  containers:
+  - name: my-nginx
+    image: nginx:alpine
+    volumeMounts:                            # Reference 'html' volume and define a mountPath
+    - name: html                             # Name of the volume
+      mountPath: /usr/share/nginx/html       # MountPath is the path in the container
+      readOnly: true                         # ReadOnly is used to set the volume as read-only
+  - name: html-updater
+    image: alpine
+    command: ["/bin/sh", "-c"]
+    args:
+     - while true; do date >> /html/index.html; sleep 5; done     # Update file volume mount /html path with latest data every 5 seconds
+    volumeMounts:                                                 # Reference 'html' volume (define above) and define a mountPath
+    - name: html
+      mountPath: /html
+
+
+Example with hostPath volume:
+-----------------------------
+apiVersion: v1
+kind: Pod
+spec:
+ volumes:                                  # Define a socket volume on host that points to /var/run/docker.sock
+ - name: docker-socket
+   hostPath:
+     path: /var/run/docker.sock
+     type: Socket
+ containers:
+    - name: docker
+    image: docker
+    command: ["sleep"]
+    args: ["100000"]
+    volumeMounts:                            # Reference 'docker-socket' volume and define a mountPath
+    - name: docker-socket
+      mountPath: /var/run/docker.sock        # MountPath is the path in the container
+
+
+Persistent Volumes:
+-------------------
+A Persistent Volume (PV) is a cluster-wide storage unit provisioned by administrator with a lifecycle independent
+from a Pod. In order to use this, we will use what's called Persistent Volume Claim (PVC). A PVC is a request for
+storage unit. It is a request for a specific amount of storage and access mode. The PVC will be bound to a PV that.
+
+A PV is a cluster-wide resource that relies on network-attached storage (NAS). It will normally be provisioned by a
+cluster administrator. It is available to a Pod even if it gets rescheduled to a different node. It relies on a storage
+provider such as NFS, cloud provider, etc. It is associated with a Pod by using a Persistent Volume Claim (PVC).
+
+Persistent Volume Workflow:
+1. Crete network storage (NFS, cloud provider, etc.)
+2. Define a Persistent Volume (PV) and send to k8s API
+3. Create a Persistent Volume Claim (PVC)
+4. K8s binds that Persistent Volume Claim (PVC) to the Persistent Volume (PV) - which means we can now talk to the storage
+5. Pod Volume references the Persistent Volume Claim (PVC)
+
+
+  +----------------+
+  |       Pod       |
+  |  +-----------+  |
+  |  | Container |  |  -------->  Persistent Volume Claim (PVC)  -------->  Persistent Volume (PV)  --------->  K8s
+  |  +-----------+  |                                                                   |
+  |                 |                                                                   |
+  +-----------------+                                                                   ↓
+                                                                                  Storage Provider
+
+
+Example for defining a Persistent Volume (PV) for Azure:
+---------------------------------------------------------
+apiVersion: v1
+kind: PersistentVolume                              # Create a Persistent Volume
+metadata:
+  name: azure-pv
+spec:
+    capacity:                                       # Define Storage capacity
+        storage: 10Gi
+    accessModes:
+        - ReadWriteOnce                             # One client can mount for read/write
+        - ReadOnlyMany                              # Many clients can mount for reading
+    persistentVolumeReclaimPolicy: Retain           # Retain even after claim is deleted (not erased/deleted)
+    azureFile:
+        secretName: <azure-secret>                  # Reference storage to use (specific to Cloud provider, NFS, etc.)
+        shareName: <name_for_azure>
+        readOnly: false
+
+
+
+ OTHER EXAMPLES: https://github.com/kubernetes/examples
+
+
+ Example for defining a Persistent Volume Claim (PVC):
+ ------------------------------------------------------
+apiVersion: v1
+kind: PersistentVolumeClaim                                   # Define a Persistent Volume Claim (PVC)
+metadata:
+  name: pod-uses-account-hdd-5g
+  annotations:
+    volume.beta.kubernetes.io/storage-class: accounthdd
+spec:
+    accessModes:                                              # Define access mode
+        - ReadWriteOnce                                       # One client can mount for read/write
+    resources:
+        requests:
+        storage: 5Gi                                          # Request storage capacity
+
+
+
+ Using the Persistent Volume Claim (PVC) in a Pod:
+ --------------------------------------------------
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-uses-account-hdd-5g
+  labels:
+    name: storage
+spec:
+    containers:
+       - image: nginx
+         name: az-c-01
+         command:
+            - /bin/sh
+            - -c
+            - while true; do echo $(date) >> /mn/blobdisk/outfile; sleep 1; done
+            volumeMounts:
+            - name: blobdisk01                               # Mount the volume
+              mountPath: /mn/blobdisk
+    volumes:                                                 # Create Volume that binds to Persistent Volume Claim (PVC)
+    - name: blobdisk01
+      persistentVolumeClaim:
+        claimName: pod-uses-account-hdd-5g
+
+
+
+Storage Classes:
+----------------
+Storage class (SC) is a type of storage template that can be used to dynamically provision storage. You can dynamically
+set up a storage on a fly. A StorageClass in Kubernetes defines different types of storage available for PersistentVolumes
+(PVs). It allows administrators to set various parameters such as provisioners, reclaim policies, and volume binding modes.
+StorageClasses enable dynamic volume provisioning, automatically creating PVs based on the specified parameters when
+PersistentVolumeClaims (PVCs) request storage. This abstraction simplifies storage management by allowing users to request
+storage without needing to know the underlying storage details. Common use cases include specifying performance
+characteristics, backup policies, and storage locations.
+
+
+StorageClass Workflow:
+1. Create a StorageClass (a YAML file)
+2. Create Persistent Volume Claims (PVC) that reference the StorageClass
+3. K8s uses StorageClass to dynamically provision Persistent Volumes (PV) based on the StorageClass parameters
+4. Storage provisioned, Persistent Volume (PV) created, and bound to Persistent Volume Claim (PVC)
+5. Pod volume references the Persistent Volume Claim (PVC)
+
+                                                                                      +----------------+
+                                                                                      |       Pod       |
+                                                                     Bind to PVC      |  +-----------+  |
+   Storage Class (SC) <---------- Persistent Volume Claim (PVC) <-------------------- |  | Container |  |
+         |                                   ^                                        |  +-----------+  |
+         |                                   |                                        |                 |
+         |                                   | Bind to PVC                            +-----------------+
+         |                                   |
+         |     PV Provisioner                |
+         +-------------------------->  Persistent Volumes (PV) ------------------------> Storage
+
+
+
+
+
+
+
+

@@ -1,0 +1,29 @@
+kubectl Commands
+-----------------
+
+    alias k=kubectl --> create an alias for kubectl
+    --> To set it up, open Terminal:  $ vi ~/.bashrc
+                                      Add the following line:  alias k=kubectl
+                                      $ source ~/.zshrc
+                                      Open new Terminal and type:  k --help
+
+
+    kubectl --> check kubectl help
+    kubectl --help --> check kubectl help
+    k --help --> check kubectl help
+
+    kubectl version --> check kubectl version
+    kubectl cluster-info --> check cluster info
+
+    kubectl get all --> retrieve information about Kubernetes Pods, Deployments, Services, etc.
+    kubectl get pods --> retrieve information about Kubernetes Pods
+    kubectl get deployments --> retrieve information about Kubernetes Deployments
+    kubectl get services --> retrieve information about Kubernetes Services
+    kubectl get nodes --> retrieve information about Kubernetes Nodes
+
+    kubectl run [container-name] --image=[image-name] --> simple way to create a Deployment for a Pod
+    kubectl port-forward [pod-name] [local-port]:[pod-port] --> enable Pod container to be called externally
+    kubectl expose pod [pod-name] --port=[port] --name=[service-name] --> expose a pod for a Deployment/Pod
+    kubectl create [resource] --> create a resource
+    kubectl apply [resource] --> apply a resource
+
