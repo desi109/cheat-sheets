@@ -1,0 +1,150 @@
+React Styling
+--------------
+
+1. Global CSS:
+--------------
+   - Use a global CSS file to define styles that apply to the entire application.
+   - Imported in the main entry file (e.g., `index.js` or `App.js`)
+   - Example: File `styles/global.css` is imported in `index.js` or `App.js`
+
+-----> index.js
+```javascript
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './styles/global.css';        // Import global CSS
+
+import App from './App';
+ReactDOM.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+  document.getElementById('root')
+);
+```
+
+-----> styles/global.css
+```css
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
+h1 {
+  color: #333;
+}
+/* Add more global styles as needed */
+```
+
+
+
+2. Component-Level CSS:
+-----------------------
+    - Use CSS files specific to each component.
+    - Import the CSS file directly into the component file.
+    - Example: File `Button.css` is imported in `Button.js`
+
+-----> Button.js
+```javascript
+import React from 'react';
+import './Button.css';                                   // Import component-specific CSS
+const Button = ({ label, onClick }) => {
+  return (
+    <button className="custom-button" onClick={onClick}>
+      {label}
+    </button>
+  );
+};
+export default Button;
+```
+
+-----> Button.css
+```css
+.custom-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.custom-button:hover {
+  background-color: #0056b3;
+}
+/* Add more styles as needed */
+```
+
+
+!!! NOTE:  Component-Level CSS refers to importing a regular CSS file (e.g., Button.css) directly into a specific
+           component file (e.g., Button.js). The styles are global, so class names can potentially conflict across components.
+           In contrast, CSS Modules use files ending with .module.css and import them into components. CSS Modules scope class
+           names locally to the component, preventing conflicts and ensuring styles do not leak between components.
+
+
+3. CSS Modules:
+-------------------
+   - Use CSS Modules for component-specific styles to avoid class name conflicts.
+   - File names typically end with `.module.css`.
+   - Example: File `Button.module.css` is imported in `Button.js`
+
+-----> Button.js
+```javascript
+import React from 'react';
+import styles from './Button.module.css';                      // Import CSS Module
+const Button = ({ label, onClick }) => {
+  return (
+    <button className={styles.customButton} onClick={onClick}>
+      {label}
+    </button>
+  );
+};
+export default Button;
+```
+
+-----> Button.module.css
+```css
+.customButton {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.customButton:hover {
+  background-color: #0056b3;
+}
+/* Add more styles as needed */
+```
+
+
+4. Styled Components:
+-------------------
+   - Use the `styled-components` library to create styled components with JavaScript.
+   - Styles are scoped to the component and can use props for dynamic styling.
+   - Example: File `Button.js` uses styled-components
+
+-----> Button.js
+```javascript
+import React from 'react';
+import styled from 'styled-components';                     // Import styled-components
+const StyledButton = styled.button`
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+`;
+const Button = ({ label, onClick }) => {
+  return (
+    <StyledButton onClick={onClick}>
+      {label}
+    </StyledButton>
+  );
+};
+export default Button;
+```
