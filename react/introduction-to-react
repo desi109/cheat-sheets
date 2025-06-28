@@ -1,0 +1,131 @@
+React is an open-source JavaScript library developed over 10 years ago by Facebook.
+It used by Facebook, Netflix, Airbnb, Uber, Instagram, WhatsApp, and many other companies.
+
+React is a library for building user interfaces (UIs) and is often used to build single-page applications (SPAs).
+Next.js, Gatsby, and Remix are popular frameworks built on top of React.
+
+Rect, at its core, is a user interface, UI, library. It's component based, meaning that the library itself manages the
+relationships between different UI components independently of how they are rendered.
+
+Virtual DOM is a key concept in React. It is a lightweight copy of the actual DOM (Document Object Model) that React
+uses to optimize rendering performance.
+Physical DOM its the browser itself.
+React Native is a framework for building mobile applications using React.
+
+
+There are two libraries defining the React on the web:
+- React: This is the core library that provides the functionality to create and manage components, handle state, and
+         manage the lifecycle of components.
+- React DOM: This library is responsible for rendering React components to the actual DOM in web applications.
+             React DOM is about the 'what' and 'where' to render it.
+
+Reconciliation is the process of updating the DOM to match the current state of the React components.
+This means that the old DOM is compared with the new virtual DOM, and only the elements that are changes, are updated
+(NO full re-rendering is needed).
+ ---> Virtual DOM: in-memory copy of the DOM
+ ---> Physical DOM: the actual DOM rendered in the browser
+
+
+JSX (JavaScript XML) is a syntax extension for JavaScript that allows you to write HTML-like code within JavaScript.
+  - JSX components are JavaScript functions or classes that return JSX
+  - JSX looks like HTML, but it is actually JavaScript
+  - JSX is an alternative way to write JavaScript
+  - JSX is JavaScript eXtension
+  - JSX is translated to JavaScript using Babel, a JavaScript compiler
+
+Options for tooling - use a ready-to-go development environment:
+  - Create React App: https://create-react-app.dev/docs/getting-started/
+* - Vite: https://vitejs.dev/guide/
+  - Next.js: https://nextjs.org/docs/getting-started
+  - Remix: https://remix.run/docs/en/v1
+
+
+ Prerequisites:  You will need installed Node.js and npm (Node Package Manager) to run React applications.
+---------------------------------------------------------------------------------------------------------
+    brew install node
+    node -v
+    npm -v
+    npx --version
+
+
+
+-----------------------
+STARTING with Vite:
+------------------------
+ 1. Install Vite and set up a new React project:
+-------------------------------------------------
+    npm create vite@latest
+
+      Need to install the following packages:
+      create-vite@5.0.0
+      Ok to proceed? (y) y
+      ✔ Project name: … react-training
+      ✔ Select a framework: › React
+      ✔ Select a variant: › JavaScript + SWC                HINT: SWC is a Rust-based JavaScript/TypeScript
+                                                                  compiler that is faster than Babel.
+      Scaffolding project in ../react-training...
+      Done. Now run:
+        cd react-training
+        npm install                   HINT: Use npm install to install the dependencies
+        npm run dev
+
+
+Directories and files in the project:
+--------------------------------------
+ - dist: This directory will contain the production build of the application. As you develop your application,
+         you will run the build command to generate the optimized files that can be deployed to a web server.
+ - public: This directory contains static assets that will be served directly. As an example, you can place images,
+           fonts, or other files that you want to be accessible at the root of your application.
+ - src: This is the main source directory where your React components and application logic will reside.
+
+ - * - index.html: This is the main HTML file that serves as the entry point for your application.
+ - * - src/main.jsx: This is the main JavaScript file that initializes your React application and renders the root component.
+ - * - src/App.jsx: This is the root component of your React application. You can start building your application by
+                modifying this file. As you add more components, you can create additional files in the `src` directory.
+ - * - package.json: This file contains metadata about your project, including dependencies, scripts, and other configuration options.
+ - * - vite.config.js: This file contains vite configs as port on which the app will run, etc.
+
+
+
+
+
+
+-----------------------
+STARTING with Next.js:
+-----------------------
+ 1. Create a new React application (Next.js):
+---------------------------------------------
+    npx create-next-app@latest
+
+      Need to install the following packages:
+      create-next-app@15.3.3
+      Ok to proceed? (y) y
+      ✔ Would you like to use TypeScript? … No
+      ✔ Would you like to use ESLint? …  Yes
+      ✔ Would you like to use Tailwind CSS? … No
+      ✔ Would you like your code inside a `src/` directory? …  Yes
+      ✔ Would you like to use App Router? (recommended) …  Yes
+      ✔ Would you like to use Turbopack for `next dev`? … No
+      ✔ Would you like to customize the import alias (`@/*` by default)? … No
+
+
+ 2. Start the React application:
+---------------------------------
+    npm run dev
+    npm start
+
+      > react-training@0.1.0 dev
+      > next dev
+      ▲ Next.js 15.3.3
+        - Local:        http://localhost:3000
+        - Network:      http://192.168.2.221:3000
+      ✓ Starting...
+
+
+ 3. Build the React application:
+----------------------------------
+    npm run build
+
+Preview the build application:
+------------------------------
+    npm run preview
