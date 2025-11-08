@@ -1,0 +1,25 @@
+#!/bin/bash
+base_url="https://bytebytego.com/images/courses/system-design-interview/design-a-chat-system"
+
+# Download all images
+curl -L -o "figure-12-1-J3Z5T7TL.png" "${base_url}/figure-12-1-J3Z5T7TL.png"
+curl -L -o "figure-12-2-CA3ZOSQI.png" "${base_url}/figure-12-2-CA3ZOSQI.png"
+curl -L -o "figure-12-3-WYSR7WB4.svg" "${base_url}/figure-12-3-WYSR7WB4.svg"
+curl -L -o "figure-12-4-6KL7KY4X.svg" "${base_url}/figure-12-4-6KL7KY4X.svg"
+curl -L -o "figure-12-5-VPDI2T2E.svg" "${base_url}/figure-12-5-VPDI2T2E.svg"
+curl -L -o "figure-12-6-6UUW2AUS.png" "${base_url}/figure-12-6-6UUW2AUS.png"
+curl -L -o "figure-12-7-YA7UWFS6.png" "${base_url}/figure-12-7-YA7UWFS6.png"
+curl -L -o "figure-12-8-3R5ORNVB.png" "${base_url}/figure-12-8-3R5ORNVB.png"
+curl -L -o "figure-12-9-356WMC2A.png" "${base_url}/figure-12-9-356WMC2A.png"
+curl -L -o "figure-12-10-2TIQVS3D.png" "${base_url}/figure-12-10-2TIQVS3D.png"
+curl -L -o "figure-12-11-FGGY42QW.png" "${base_url}/figure-12-11-FGGY42QW.png"
+curl -L -o "figure-12-12-5BTRQZRL.png" "${base_url}/figure-12-12-5BTRQZRL.png"
+curl -L -o "figure-12-13-YB54XAJ3.png" "${base_url}/figure-12-13-YB54XAJ3.png"
+curl -L -o "figure-12-14-DRZR5QM7.png" "${base_url}/figure-12-14-DRZR5QM7.png"
+curl -L -o "figure-12-15-WJ6BSAG2.png" "${base_url}/figure-12-15-WJ6BSAG2.png"
+curl -L -o "figure-12-16-IUZRWUV6.png" "${base_url}/figure-12-16-IUZRWUV6.png"
+curl -L -o "figure-12-17-GJTW7H57.png" "${base_url}/figure-12-17-GJTW7H57.png"
+curl -L -o "figure-12-18-CTDI4PAJ.svg" "${base_url}/figure-12-18-CTDI4PAJ.svg"
+curl -L -o "figure-12-19-KY63S3WN.png" "${base_url}/figure-12-19-KY63S3WN.png"
+
+echo "Download complete!"

@@ -1,0 +1,27 @@
+#!/bin/bash
+base_url="https://bytebytego.com/images/courses/system-design-interview/design-a-key-value-store"
+
+# Download all images
+curl -L -o "figure-6-1-D3AZLP5W.svg" "${base_url}/figure-6-1-D3AZLP5W.svg"
+curl -L -o "figure-6-2-KZYRLJFF.svg" "${base_url}/figure-6-2-KZYRLJFF.svg"
+curl -L -o "figure-6-3-3AXO446L.svg" "${base_url}/figure-6-3-3AXO446L.svg"
+curl -L -o "figure-6-4-SVUGPDYI.svg" "${base_url}/figure-6-4-SVUGPDYI.svg"
+curl -L -o "figure-6-5-NG3WIQQO.svg" "${base_url}/figure-6-5-NG3WIQQO.svg"
+curl -L -o "figure-6-6-RNMG7AUI.svg" "${base_url}/figure-6-6-RNMG7AUI.svg"
+curl -L -o "figure-6-7-MX7NGSSF.svg" "${base_url}/figure-6-7-MX7NGSSF.svg"
+curl -L -o "figure-6-8-WXAQYDBT.svg" "${base_url}/figure-6-8-WXAQYDBT.svg"
+curl -L -o "figure-6-9-APUHGGQW.svg" "${base_url}/figure-6-9-APUHGGQW.svg"
+curl -L -o "figure-6-10-U4WMW34H.svg" "${base_url}/figure-6-10-U4WMW34H.svg"
+curl -L -o "figure-6-11-SHKPJFQN.svg" "${base_url}/figure-6-11-SHKPJFQN.svg"
+curl -L -o "figure-6-12-TCHVLATH.svg" "${base_url}/figure-6-12-TCHVLATH.svg"
+curl -L -o "figure-6-13-2LCEPIWQ.svg" "${base_url}/figure-6-13-2LCEPIWQ.svg"
+curl -L -o "figure-6-14-S2QAQ6NW.svg" "${base_url}/figure-6-14-S2QAQ6NW.svg"
+curl -L -o "figure-6-15-I46TOGGB.svg" "${base_url}/figure-6-15-I46TOGGB.svg"
+curl -L -o "figure-6-16-5GFGLUJW.svg" "${base_url}/figure-6-16-5GFGLUJW.svg"
+curl -L -o "figure-6-17-727LAZC5.svg" "${base_url}/figure-6-17-727LAZC5.svg"
+curl -L -o "figure-6-18-VIXXZUFG.svg" "${base_url}/figure-6-18-VIXXZUFG.svg"
+curl -L -o "figure-6-19-L5VIQL76.svg" "${base_url}/figure-6-19-L5VIQL76.svg"
+curl -L -o "figure-6-20-CMQ6VUZJ.svg" "${base_url}/figure-6-20-CMQ6VUZJ.svg"
+curl -L -o "figure-6-21-WBKMXPRG.svg" "${base_url}/figure-6-21-WBKMXPRG.svg"
+
+echo "Download complete!"
