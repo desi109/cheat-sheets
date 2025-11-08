@@ -1,0 +1,284 @@
+Controlled and Uncontrolled Components
+---------------------------------------
+In React, controlled and uncontrolled components refer to how form inputs like <input>, <textarea>, or <select> are
+managed—specifically, who controls their data.
+
+Controlled components:
+-----------------------
+In a controlled component, the form element's value is controlled by React state. That means what’s displayed in the
+input is determined by state, and every user input triggers a state update.
+
+Example of a controlled component:
+```javascript
+import React, { useState } from 'react';
+
+function ControlledInput() {
+  const [name, setName] = useState('');
+
+  return (
+    <div>
+      <input
+        value={name}
+        onChange={e => setName(e.target.value)}
+      />
+      <p>Hello, {name || 'stranger'}!</p>
+    </div>
+  );
+}
+
+export default ControlledInput;
+```
+Explanation:
+- value={name} binds the input to React state.
+- onChange updates state whenever the input changes.
+- The component fully controls the input.
+
+
+Uncontrolled components:
+-------------------------
+In an uncontrolled component, the form data is managed by the DOM itself. You don’t store the value in React
+state—instead, you read it when you need it, often via a ref.
+
+Example:
+```javascript
+import React, { useRef } from 'react';
+
+function UncontrolledInput() {
+  const inputRef = useRef();
+
+  const handleSubmit = () => {
+    alert(`Hello, ${inputRef.current.value || 'stranger'}!`);
+  };
+
+  return (
+    <div>
+      <input ref={inputRef} />
+      <button onClick={handleSubmit}>Say Hello</button>
+    </div>
+  );
+}
+
+export default UncontrolledInput;
+```
+Explanation:
+- No state tracks the input value.
+- React uses a ref to access the actual DOM element and get its value when needed.
+
+
+When to Use Which?
+-------------------
+Scenario                               Use Controlled	        Use Uncontrolled
+Real-time validation	                   ✅ Yes                   🚫 No
+Complex form logic	                       ✅ Yes	                🚫 No
+Simple input, fast dev	                   🚫 No	                ✅ Yes
+React ecosystem tools (e.g. Formik)        ✅ Yes	                🚫 No
+
+If we are building something complex or dynamic (e.g. login forms, search boxes), we should go with controlled components.
+If we want a quick-and-dirty input that we read once (like a file picker or form that submits data all at once),
+uncontrolled might be fine.
+
+
+
+Forms
+------
+A form in React is a way to collect user input through elements like <input>, <select>, <textarea>, and handle that data
+within the component’s state. React lets you control the data flow of these fields using its component state and event
+handlers, especially with controlled components.
+
+A form is just a collection of interactive fields that let users enter information—like names, passwords, or
+messages—and then submit it to the application. In React, we typically:
+- Store form values in state (with useState)
+- Update state on every input change (via onChange)
+- Handle what happens when the form is submitted (with onSubmit)
+
+Example:
+```javascript
+import React, { useState } from 'react';
+
+function SignupForm() {
+  const [formData, setFormData] = useState({
+    username: '',
+    email: ''
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('Form submitted:', formData);
+    // You could now send this data to an API
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <label>
+        Username:
+        <input
+          name="username"
+          value={formData.username}
+          onChange={handleChange}
+        />
+      </label>
+      <br />
+      <label>
+        Email:
+        <input
+          name="email"
+          type="email"
+          value={formData.email}
+          onChange={handleChange}
+        />
+      </label>
+      <br />
+      <button type="submit">Sign Up</button>
+    </form>
+  );
+}
+export default SignupForm;
+```
+Explanation:
+- useState: Manages the form’s input values.
+- handleChange: Updates the correct field in state every time the user types.
+- handleSubmit: Prevents the default page reload and logs the form data.
+
+
+
+useTransition - For Managing UI Transitions
+----------------------------------------------
+useTransition is a React hook that helps you manage non-urgent updates so they don’t block the UI—perfect for things
+like filtering lists or loading search results.
+Why It Exists? Normally, all state updates in React are treated with equal priority. But sometimes, you want part of
+the UI to update immediately (like a text input) while deferring other heavy changes (like rendering a filtered list).
+
+Example:
+```javascript
+import React, { useState, useTransition } from 'react';
+
+function SearchList({ items }) {
+  const [query, setQuery] = useState('');
+  const [filtered, setFiltered] = useState(items);
+  const [isPending, startTransition] = useTransition();
+
+  const handleChange = (e) => {
+    const value = e.target.value;
+    setQuery(value);
+
+    startTransition(() => {
+      const filteredItems = items.filter(item =>
+        item.toLowerCase().includes(value.toLowerCase())
+      );
+      setFiltered(filteredItems);
+    });
+  };
+
+  return (
+    <>
+      <input value={query} onChange={handleChange} />
+      {isPending && <p>Loading...</p>}
+      <ul>
+        {filtered.map((item, i) => <li key={i}>{item}</li>)}
+      </ul>
+    </>
+  );
+}
+
+export default SearchList;
+```
+Explanation:
+- Typing in the input updates query immediately.
+- startTransition tells React: “This filtering is low-priority—don’t block the UI for it.”
+- If the filtering is slow, React can still keep the UI responsive.
+
+
+
+Actions — In Server Components (React / Next.js / Remix)
+--------------------------------------------------------
+Actions are part of modern React Server Components and frameworks like Next.js App Router. They let you write
+server-side functions that are called directly from the client. It’s like calling a form handler without needing
+a separate API route.
+
+Example:
+```javascript
+// actions.js (can live in server code)
+'use server';
+
+export async function submitForm(data) {
+  await saveToDatabase(data);
+}
+```
+
+Then, from a form:
+```javascript
+<form action={submitForm}>
+  <input name="name" />
+  <button type="submit">Send</button>
+</form>
+```
+Explanation:
+- You don’t need to write manual fetch calls or set up API routes.
+- It keeps your logic close to your component—and React handles the rest.
+
+
+Concept	                     Purpose	                                                 Example Use
+useTransition	  Defer non-urgent state updates for smoother UI	           Filtering, search, tab switching
+Actions (RSC)	  Server-side functions triggered by client events	          Submitting a form directly to a server
+
+
+
+useActionState
+---------------
+useActionState is a React hook that helps you:
+- Call server-side actions (like form submissions or data processing)
+- Manage form state and errors in a controlled, reactive way
+- Get access to the response or result of that action on the client
+It’s most useful when working with server-side Actions (like in <form action={...}>) and you want to track the response
+state, such as loading, success, or validation feedback.
+
+Example:
+```javascript
+'use client';
+import { useActionState } from 'react';
+import { sendMessage } from './actions';
+
+export default function ContactForm() {
+  const initialState = { status: null, message: '' };
+
+  const [state, formAction, isPending] = useActionState(sendMessage, initialState);
+
+  return (
+    <form action={formAction}>
+      <input name="email" type="email" placeholder="Email" required />
+      <textarea name="message" placeholder="Message" required />
+      <button type="submit" disabled={isPending}>
+        {isPending ? 'Sending...' : 'Send'}
+      </button>
+
+      {state.status && <p>{state.message}</p>}
+    </form>
+  );
+}
+```
+
+On the server (actions.js):
+```javascript
+'use server';
+
+export async function sendMessage(prevState, formData) {
+  const email = formData.get('email');
+  const message = formData.get('message');
+
+  // Simulate saving or validation
+  if (!email.includes('@')) {
+    return { status: 'error', message: 'Invalid email' };
+  }
+
+  // If successful
+  return { status: 'success', message: 'Message sent!' };
+}
+```

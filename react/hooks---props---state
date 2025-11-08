@@ -1,0 +1,255 @@
+Props
+------
+Props are used to pass data from a parent component to a child component in React. They are read-only and cannot be
+modified by the child component. Props allow you to make components reusable and dynamic.
+
+- Props are way to pass args to components
+- Props are using HTML-like attributes syntax
+
+
+Example:
+------> ChildComponent.jsx
+```javascript
+import React from 'react';
+
+const ChildComponent = ({ name="Child" }) => {
+  return <div>Hello from {name}</div>;
+};
+export default ChildComponent;
+```
+
+
+-----> ParentComponent.jsx
+```javascript
+import React from 'react';
+import ChildComponent from './ChildComponent';
+
+const ParentComponent = ({ name = "Parent" }) => {
+  return (
+    <div>
+      <ChildComponent name={name} />
+    </div>
+  );
+};
+export default ParentComponent;
+```
+
+
+-----> App.jsx
+```javascript
+import React from 'react'
+import ParentComponent from './components/ParentComponent'
+import ChildComponent from './components/ChildComponent'
+
+function App() {
+  return (
+    <>
+      <div>
+        <h3>{'<ParentComponent name="John" /> output: '}</h3>
+        <ParentComponent name="John" />
+      </div>
+
+      <div>
+        <h3>{'<ParentComponent /> output: '}</h3>
+        <ParentComponent />
+      </div>
+
+      <br></br>
+      <br></br>
+
+      <div>
+        <h3>{'<ChildComponent text="Anna" /> output: '}</h3>
+        <ChildComponent name="Anna" />
+      </div>
+
+      <div>
+        <h3>{'<ChildComponent /> output: '}</h3>
+        <ChildComponent />
+      </div>
+    </>
+  )
+}
+
+export default App
+```
+
+OUTPUT:
+<ParentComponent name="John" /> output:  Hello from John
+<ParentComponent /> output:  Hello from Parent
+
+<ChildComponent text="Anna" /> output: Hello from Anna
+<ChildComponent /> output: Hello from Child
+
+
+
+Hooks
+------
+Hooks are functions that let you use state and other React features in functional components. They allow you to manage
+state, lifecycle events, and side effects without needing to convert your component to a class.
+
+The idea behind React hooks is to let you use state and other React features in functional components, without needing
+to write class components. Before hooks, if you wanted to manage component state or tap into lifecycle methods, you had
+to write a class. Hooks changed all that by providing a way to “hook into” React features directly in your functions.
+
+Here are the core ideas:
+- useState lets you add and update local state inside a functional component.
+- useEffect allows you to run side effects (like fetching data, updating the DOM, or setting timers) when your component
+  renders or updates.
+
+Hooks make your code cleaner and easier to reuse by separating logic into smaller functions.
+So instead of this:
+```javascript
+class Counter extends React.Component {
+  state = { count: 0 }
+  componentDidUpdate() {
+    document.title = `Count: ${this.state.count}`
+  }
+  render() {
+    return <button onClick={() => this.setState({ count: this.state.count + 1 })}>{this.state.count}</button>
+  }
+}
+```
+
+You can do this:
+```javascript
+function Counter() {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    document.title = `Count: ${count}`;
+  }, [count]);
+
+  return <button onClick={() => setCount(count + 1)}>{count}</button>;
+}
+```
+
+
+Another example:
+-----> HooksCounter.jsx
+```javascript
+import React, { useState, useEffect } from 'react';
+
+function HooksCounter() {
+  const [count, setCount] = useState(0);   // useState creates a state variable count
+
+  useEffect(() => {                        // useEffect updates the page’s title whenever count changes
+    document.title = `Count: ${count}`;
+  }, [count]);
+
+  const increment = () => setCount(prevCount => prevCount + 1);
+  const decrement = () => setCount(prevCount => prevCount - 1);
+
+  return (
+    <div>
+      <h2>Count: {count}</h2>
+      <button onClick={increment}>Increment</button>
+      <button onClick={decrement}>Decrement</button>
+    </div>
+  );
+}
+
+export default HooksCounter;
+```
+
+
+-----> App.jsx
+```javascript
+import React from 'react'
+import HooksCounter from './components/HooksCounter'
+
+function App() {
+  return (
+    <>
+       <div>
+           <h3>{'Hooks Counter output: '}</h3>
+            <HooksCounter />
+       </div>
+    </>
+  )
+}
+
+export default App
+```
+
+OUTPUT:
+Hooks Counter output:         Count: 3
+                        Increment    Decrement
+
+
+
+State
+------
+State is a built-in object in React that allows you to create components that can change their output over time.
+
+Example:
+-----> StateClickCounter.jsx
+```javascript
+import React, { useState } from 'react';
+
+function StateClickCounter() {
+  const [count, setCount] = useState(0);
+
+  const handleClick = () => {
+    setCount(prev => prev + 1);
+  };
+
+  return (
+    <div>
+      <p>You clicked {count} times!</p>
+      <button onClick={handleClick}>Click Me</button>
+    </div>
+  );
+}
+
+export default StateClickCounter;
+```
+
+
+-----> App.jsx
+```javascript
+import React from 'react'
+import StateClickCounter from './components/StateClickCounter'
+
+function App() {
+  return (
+    <>
+      <div>
+        <h3>{'State Click Counter output: '}</h3>
+        <StateClickCounter />
+      </div>
+    </>
+  )
+}
+
+export default App
+```
+
+OUTPUT:
+State Click Counter output:     You clicked 1 times!
+                                      Click Me
+
+Explanation:
+- useState(0): Creates a state variable count initialized to 0.
+               React keeps track of this value even after the component re-renders.
+- setCount(prev => prev + 1):  Updates the state when the button is clicked.
+                               Triggers a re-render so the new count appears in the UI.
+
+- Dynamic UI:  The paragraph updates automatically whenever count changes.
+               There’s no manual DOM manipulation—React handles it under the hood.
+
+
+
+State vs Hooks: What's the Difference?
+----------------------------------------
+1. State is a concept
+State is simply data that changes over time and influences what your component displays.
+Think of it as the memory of your component.
+
+2. Hooks are tools to use that state
+Hooks like useState, useReducer, or useRef are functions introduced in React 16.8 that let you use features like state
+and side effects in function components—something that was previously only possible in class components.
+
+Example Analogy:
+State is like a whiteboard for your component.
+useState hook is the marker you use to write on it—and React watches that board to update the UI when the writing changes.
+
+

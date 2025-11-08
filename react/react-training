@@ -1,0 +1,108 @@
+React Training
+---------------
+
+Day 1: Intro to React and JSX
+------------------------------
+1. What is React?
+2. What is SPA?
+3. React - installation and set up
+4. JSX syntax / JSX vs HTML
+Task: Create your first "Hello World" React app
+
+
+Day 2: React Components and Props
+----------------------------------
+1. Components
+2. Component hierarchy
+3. Props and how to pass data
+4. Styling components
+Task: Update Day 1 task to pass the name field and render "Hello, {name}!" instead of "Hello World".
+
+
+Day 3: State and Events
+------------------------
+1. What is state?
+2. useState hook
+3. Handling events
+4. Conditional rendering
+5. Rendering lists and using keys in lists
+Task: Create a tic-tac-toe.
+
+
+Day 4: Side effects and useEffect
+----------------------------------
+1. Side effects
+2. useEffect hook
+3. Fetching data from API
+4. Listen to events
+Task: Render the list of users (fetch it from https://jsonplaceholder.typicode.com/users API) in simple HTML table.
+
+
+Day 5: Component composition and communication
+------------------------------------------------
+1. Component rendering
+2. Component composition
+3. Children
+4. Parent-child communication
+5. Child-parent communication
+Task: Pass information from parent to child and child to parent components respectively.
+
+
+Day 6: Forms and useRef
+------------------------
+1. Handling forms inputs
+2. Controlled and uncontrolled inputs
+3. useRef hook
+Task: Create a simple form with controlled inputs and submit button. On submit, display the input values below the form.
+
+
+Day 7: Router
+---------------
+1. Navigation
+2. URL params, search params
+3. Setting up React router
+4. Route, link, useParams
+Task: Create a simple multi-page React application using React Router to navigate between different components like
+      Home, About, Contact.
+
+
+Day 8: State Management and Context API
+----------------------------------------
+1. Global vs Local state
+2. Context API: create, provide, consume-context
+3. Context vs props
+4. State management pattern
+5. useReducer hook and complex state
+Task: Create a small React application that allows users to toggle between light and dark themes.
+      Use the Context API to mange the theme state globally and apply the selected theme across all components.
+
+
+Day 9: Custom Hooks and Higher Order Component (HOC)
+----------------------------------------------------
+1. What is custom hook?
+2. Patterns for extracting logic
+3. What is Higher Order Component (HOC)?
+4. React Portals
+Task: Create a React app that display a counter increment and decrement buttons. Use a custom hook to manage the
+      counter logic (state and handlers), and wrap the counter component with a Higher Order Component (HOC) that logs
+      every time the component renders or the counter value changes.
+
+
+Day 10: Performance and memoization
+------------------------------------
+1. React.memo
+2. useMemo
+3. useCallback
+4. Optimization techniques
+5. Code splitting
+6. Testing
+Task: Create a small calculate r that perform basic arithmetic operations (add, subtract, multiply, divide).
+      Use:
+          - useMemo to memoize the results of calculations so it only recalculates when input changes.
+          - useCallback to memoize the event handlers for input changes and button clicks.
+      Unit tests to test:
+          - Correctness of the calculations.
+          - That the memoization works as expected (e.g., handlers and results don't recompute unnecessarily).
+          - UI behavior (e.g., result updates when inputs change).
+
+

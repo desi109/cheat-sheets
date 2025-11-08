@@ -1,0 +1,44 @@
+React Router
+------------
+It is a library for managing navigation and routing in React applications. It allows you to define routes, navigate
+between them, and render components based on the current URL. React Router is not part from the React core library, so
+it needs to be installed:
+
+   npm install react-router@latest
+
+For the routing we can also use context API, but React Router is more powerful and easier to use for most cases.
+In App.jsx, three components from the react-router library are imported:
+
+     import { BrowserRouter as Router, Route, Switch } from 'react-router';
+
+ * BrowserRouter: It has the basic router functionality and it is used as a parent.
+ * Route: It acts as a container dor the individual route components.
+ * Route: It consists of a path (which is a relative URL) and JSX to render when the path in the address bar of the
+          browser matches.
+ * index: Index means the root of the domain (the homa page).
+
+Example:
+---------> App.jsx
+```javascript
+import React from 'react';
+import { BrowserRouter as Router, Route, Switch } from 'react-router';
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Banner>
+        <div>Providing a banner for the application</div>
+      </Banner>
+      <Routes>
+        <Route index path="/" element={<Home />} />
+        <Route path="/about" component={About} />
+        <Route path="/contact" component={Contact} />
+      </Routes>
+    <BrowserRouter>
+  );
+}
+
+export default App;
+```
+
+
